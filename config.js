@@ -164,16 +164,16 @@ window.SITE = {
 
   // ---- Toolkit -------------------------------------------------------------
   toolkit: {
-    blurb: "What I reach for, and where I have actually used it.",
+    blurb: "Technologies I am proficient in.",
     languages: [
       {
         name: "Python",
         icon: "python",
-        note: "Dissertation pipeline, Streamlit, NumPy",
+        note: "Programming Fundamentals, Probabilities, Dissertation Pipeline, Streamlit, NumPy",
       },
-      { name: "SQL", icon: "sql", note: "Database Systems, Eloquent schemas" },
-      { name: "PHP", icon: "php", note: "Laravel backend for Music Musings" },
-      { name: "Java", icon: "java", note: "Software Engineering coursework" },
+      { name: "SQL", icon: "sql", note: "Database Systems, Eloquent schemas, Linear & Relational Algebra" },
+      { name: "PHP", icon: "php", note: "Fundamental framework for Database Systems, Laravel backend for Music Musings" },
+      { name: "Java", icon: "java", note: "Programming Fundamentals, Spring Boot, Software Engineering Coursework" },
       {
         name: "C++",
         icon: "cpp",
@@ -183,13 +183,13 @@ window.SITE = {
       {
         name: "HTML",
         icon: "html",
-        note: "Every front end here and at university",
+        note: "Basic web markup, Laravel Blade templates, Streamlit components",
       },
-      { name: "CSS", icon: "css", note: "Tailwind in Laravel, plain CSS here" },
+      { name: "CSS", icon: "css", note: "Tailwind in Laravel, Basic styling of Web Components" },
       {
         name: "Ada",
         icon: "ada",
-        note: "Critical Systems, formal correctness",
+        note: "Critical Systems, Formal Correctness Theory, SPARK Ada, Hoare Logic",
       },
     ],
     groups: [
@@ -198,6 +198,10 @@ window.SITE = {
         items: [
           "Deep learning",
           "CNNs",
+          "PCA & dimensionality reduction",
+          "Linear Regression",
+          "Logistic Regression",
+          "Random Forests",
           "Vision Transformers",
           "Image segmentation",
           "nnU-Net",
@@ -215,7 +219,7 @@ window.SITE = {
           "NIfTI",
           "Nibabel",
           "Image analysis",
-          "Segmentation",
+          "Segmentation of Medical Data",
         ],
       },
       {
@@ -225,8 +229,8 @@ window.SITE = {
           "Streamlit",
           "Plotly",
           "Spark",
-          "Data preprocessing",
-          "Clinical data analytics",
+          "Data Preprocessing",
+          "Clinical Data Analytics",
         ],
       },
       {
@@ -235,6 +239,8 @@ window.SITE = {
           "Laravel",
           "Livewire",
           "Tailwind CSS",
+          "Spring Boot",
+          "RESTful web services",
           "REST APIs",
           "Git",
           "Docker",
@@ -316,7 +322,7 @@ window.SITE = {
     blurb:
       "I'm currently searching & applying for graduate software, data analytics and ML engineering roles.",
     email: "ethanransom271@gmail.com",
-    emailLabel: "Start a conversation",
+    emailLabel: "Get in touch",
     links: [
       { label: "GitHub", url: "https://github.com/ethanransomm" },
       {
