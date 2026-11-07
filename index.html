@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Ethan Ransom | Computer Science Graduate</title>
+    <meta
+      name="description"
+      content="First Class Computer Science graduate from Swansea University, based in Bristol. Machine learning for medical imaging, and data-heavy interfaces that non-specialists can read."
+    />
+    <meta
+      property="og:title"
+      content="Ethan Ransom | Computer Science Graduate"
+    />
+    <meta
+      property="og:description"
+      content="First Class Computer Science graduate from Swansea University, based in Bristol. Machine learning for medical imaging, and data-heavy interfaces that non-specialists can read."
+    />
+    <meta property="og:type" content="website" />
+    <!-- Once deployed, add: <meta property="og:image" content="https://domain.com/assets/preview.png"> -->
+
+    <meta name="theme-color" content="#0c1214" />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+
+    <script>
+      if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+    </script>
+
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+
+    <main id="main">
+      <section id="top" class="hero">
+        <div class="hero-main">
+          <p id="hero-role" class="eyebrow"></p>
+          <h1 id="hero-name"></h1>
+          <p id="hero-tagline" class="hero-tagline"></p>
+          <div id="hero-actions" class="actions"></div>
+          <div id="hero-photo" class="hero-photo"></div>
+        </div>
+        <pre id="hero-art" class="hero-art" aria-hidden="true"></pre>
+      </section>
+
+      <div id="wire-band" class="wire-band" aria-hidden="true"></div>
+
+      <section id="about" aria-labelledby="about-title">
+        <header class="sec-head reveal">
+          <h2 id="about-title" class="sr-only">About</h2>
+          <div class="sec-line">
+            <p class="sec-cmd" aria-hidden="true">
+              <span class="pl">
+                <span class="pl-seg pl-logo"
+                  ><svg
+                    class="arch"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <path
+                      d="M12 1.5c-1 2.4-1.6 4-2.7 6.3.7.7 1.5 1.6 2.8 2.5-1.4-.6-2.4-1.2-3.1-1.8-1.4 2.9-3.6 7-8 15 3.5-2 6.2-3.2 8.7-3.7-.1-.5-.2-1-.2-1.5v-.1c.1-2.1 1.2-3.8 2.4-3.7 1.2 0 2.2 1.7 2.3 3.9 0 .4 0 .8-.1 1.2 2.5.5 5.2 1.7 8.6 3.6-.7-1.2-1.3-2.3-1.9-3.4-.9-.7-1.9-1.6-3.8-2.6 1.3.3 2.2.7 3 1.1C16.3 8.7 15.8 7 12 1.5Z"
+                    /></svg
+                ></span>
+                <span class="pl-sep pl-sep-a"></span>
+                <span class="pl-seg pl-path">~</span>
+                <span class="pl-sep pl-sep-b"></span>
+              </span>
+              <span class="pl-cmd">whoami</span>
+              <span class="pl-note"># about</span>
+            </p>
+          </div>
+        </header>
+        <div class="about-grid">
+          <div id="about-text" class="prose"></div>
+          <div id="interests" class="interests reveal"></div>
+        </div>
+      </section>
+
+      <section id="projects" aria-labelledby="projects-title">
+        <header class="sec-head reveal">
+          <h2 id="projects-title" class="sr-only">Projects</h2>
+          <div class="sec-line">
+            <p class="sec-cmd" aria-hidden="true">
+              <span class="pl">
+                <span class="pl-seg pl-logo"
+                  ><svg
+                    class="arch"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <path
+                      d="M12 1.5c-1 2.4-1.6 4-2.7 6.3.7.7 1.5 1.6 2.8 2.5-1.4-.6-2.4-1.2-3.1-1.8-1.4 2.9-3.6 7-8 15 3.5-2 6.2-3.2 8.7-3.7-.1-.5-.2-1-.2-1.5v-.1c.1-2.1 1.2-3.8 2.4-3.7 1.2 0 2.2 1.7 2.3 3.9 0 .4 0 .8-.1 1.2 2.5.5 5.2 1.7 8.6 3.6-.7-1.2-1.3-2.3-1.9-3.4-.9-.7-1.9-1.6-3.8-2.6 1.3.3 2.2.7 3 1.1C16.3 8.7 15.8 7 12 1.5Z"
+                    /></svg
+                ></span>
+                <span class="pl-sep pl-sep-a"></span>
+                <span class="pl-seg pl-path">~</span>
+                <span class="pl-sep pl-sep-b"></span>
+              </span>
+              <span class="pl-cmd">ls ~/projects</span>
+            </p>
+          </div>
+        </header>
+        <div id="project-list" class="project-list"></div>
+      </section>
+
+      <section id="toolkit" class="band" aria-labelledby="toolkit-title">
+        <header class="sec-head reveal">
+          <h2 id="toolkit-title" class="sr-only">Toolkit</h2>
+          <div class="sec-line">
+            <p class="sec-cmd" aria-hidden="true">
+              <span class="pl">
+                <span class="pl-seg pl-logo"
+                  ><svg
+                    class="arch"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <path
+                      d="M12 1.5c-1 2.4-1.6 4-2.7 6.3.7.7 1.5 1.6 2.8 2.5-1.4-.6-2.4-1.2-3.1-1.8-1.4 2.9-3.6 7-8 15 3.5-2 6.2-3.2 8.7-3.7-.1-.5-.2-1-.2-1.5v-.1c.1-2.1 1.2-3.8 2.4-3.7 1.2 0 2.2 1.7 2.3 3.9 0 .4 0 .8-.1 1.2 2.5.5 5.2 1.7 8.6 3.6-.7-1.2-1.3-2.3-1.9-3.4-.9-.7-1.9-1.6-3.8-2.6 1.3.3 2.2.7 3 1.1C16.3 8.7 15.8 7 12 1.5Z"
+                    /></svg
+                ></span>
+                <span class="pl-sep pl-sep-a"></span>
+                <span class="pl-seg pl-path">~</span>
+                <span class="pl-sep pl-sep-b"></span>
+              </span>
+              <span class="pl-cmd">pacman -Qe</span>
+              <span class="pl-note"># toolkit</span>
+            </p>
+          </div>
+        </header>
+        <p id="toolkit-blurb" class="lead"></p>
+        <ul id="languages" class="lang-grid"></ul>
+        <div id="skill-groups" class="skill-groups"></div>
+      </section>
+
+      <section id="background" aria-labelledby="background-title">
+        <header class="sec-head reveal">
+          <h2 id="background-title" class="sr-only">Background</h2>
+          <div class="sec-line">
+            <p class="sec-cmd" aria-hidden="true">
+              <span class="pl">
+                <span class="pl-seg pl-logo"
+                  ><svg
+                    class="arch"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <path
+                      d="M12 1.5c-1 2.4-1.6 4-2.7 6.3.7.7 1.5 1.6 2.8 2.5-1.4-.6-2.4-1.2-3.1-1.8-1.4 2.9-3.6 7-8 15 3.5-2 6.2-3.2 8.7-3.7-.1-.5-.2-1-.2-1.5v-.1c.1-2.1 1.2-3.8 2.4-3.7 1.2 0 2.2 1.7 2.3 3.9 0 .4 0 .8-.1 1.2 2.5.5 5.2 1.7 8.6 3.6-.7-1.2-1.3-2.3-1.9-3.4-.9-.7-1.9-1.6-3.8-2.6 1.3.3 2.2.7 3 1.1C16.3 8.7 15.8 7 12 1.5Z"
+                    /></svg
+                ></span>
+                <span class="pl-sep pl-sep-a"></span>
+                <span class="pl-seg pl-path">~</span>
+                <span class="pl-sep pl-sep-b"></span>
+              </span>
+              <span class="pl-cmd">history</span>
+              <span class="pl-note"># background</span>
+            </p>
+          </div>
+        </header>
+        <ol id="timeline" class="timeline"></ol>
+      </section>
+
+      <section id="now" class="band" aria-labelledby="now-title">
+        <header class="sec-head reveal">
+          <h2 id="now-title" class="sr-only">Right now</h2>
+          <div class="sec-line">
+            <p class="sec-cmd" aria-hidden="true">
+              <span class="pl">
+                <span class="pl-seg pl-logo"
+                  ><svg
+                    class="arch"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <path
+                      d="M12 1.5c-1 2.4-1.6 4-2.7 6.3.7.7 1.5 1.6 2.8 2.5-1.4-.6-2.4-1.2-3.1-1.8-1.4 2.9-3.6 7-8 15 3.5-2 6.2-3.2 8.7-3.7-.1-.5-.2-1-.2-1.5v-.1c.1-2.1 1.2-3.8 2.4-3.7 1.2 0 2.2 1.7 2.3 3.9 0 .4 0 .8-.1 1.2 2.5.5 5.2 1.7 8.6 3.6-.7-1.2-1.3-2.3-1.9-3.4-.9-.7-1.9-1.6-3.8-2.6 1.3.3 2.2.7 3 1.1C16.3 8.7 15.8 7 12 1.5Z"
+                    /></svg
+                ></span>
+                <span class="pl-sep pl-sep-a"></span>
+                <span class="pl-seg pl-path">~</span>
+                <span class="pl-sep pl-sep-b"></span>
+              </span>
+              <span class="pl-cmd">jobs</span>
+              <span class="pl-note"># now</span>
+            </p>
+          </div>
+        </header>
+        <div class="now-grid">
+          <div class="card" id="now-learning"></div>
+          <div class="card" id="now-next"></div>
+        </div>
+      </section>
+
+      <section id="contact" aria-labelledby="contact-title">
+        <header class="sec-head reveal">
+          <h2 id="contact-title" class="sr-only">Get in touch</h2>
+          <div class="sec-line">
+            <p class="sec-cmd" aria-hidden="true">
+              <span class="pl">
+                <span class="pl-seg pl-logo"
+                  ><svg
+                    class="arch"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <path
+                      d="M12 1.5c-1 2.4-1.6 4-2.7 6.3.7.7 1.5 1.6 2.8 2.5-1.4-.6-2.4-1.2-3.1-1.8-1.4 2.9-3.6 7-8 15 3.5-2 6.2-3.2 8.7-3.7-.1-.5-.2-1-.2-1.5v-.1c.1-2.1 1.2-3.8 2.4-3.7 1.2 0 2.2 1.7 2.3 3.9 0 .4 0 .8-.1 1.2 2.5.5 5.2 1.7 8.6 3.6-.7-1.2-1.3-2.3-1.9-3.4-.9-.7-1.9-1.6-3.8-2.6 1.3.3 2.2.7 3 1.1C16.3 8.7 15.8 7 12 1.5Z"
+                    /></svg
+                ></span>
+                <span class="pl-sep pl-sep-a"></span>
+                <span class="pl-seg pl-path">~</span>
+                <span class="pl-sep pl-sep-b"></span>
+              </span>
+              <span class="pl-cmd">mail -s "hello"</span>
+              <span class="pl-note"># contact</span>
+            </p>
+          </div>
+        </header>
+        <p id="contact-blurb" class="lead"></p>
+        <div id="contact-links" class="actions"></div>
+        <p id="contact-address" class="contact-address"></p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <nav id="nav" aria-label="Sections"></nav>
+      <p id="footer-text"></p>
+    </footer>
+
+    <!-- config.js must load before main.js -->
+    <script src="config.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>

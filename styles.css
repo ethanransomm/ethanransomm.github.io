@@ -1,0 +1,2357 @@
+/* ==========================================================================
+   STYLES
+
+   This site is dark only. There is no light mode and no theme toggle: the
+   design is built for a murky ground, and a bleached version of it was a
+   different design wearing the same markup.
+
+   Structure:
+     1. Palettes  swap with theme.palette in config.js
+     2. Shared tokens
+     3. Base, layout, components
+   ========================================================================== */
+
+/* ---- 1. Palettes --------------------------------------------------------- */
+
+:root,
+:root[data-palette="layer"] {
+  /* Layer: a murky desaturated ground after Lain, Psycho-Pass, Ghost in the
+     Shell and Akira, with a terminal's own green as the one loud thing on
+     it. Neutrals carry a teal cast rather than being clean grey; the
+     metadata layer is a soft teal, so the green never has to compete. */
+  --accent: #4f9d3a;
+  --sage: #86aca6;
+  --on-accent: #06130a;
+  --bg: #0c1214;
+  --surface: #131a1c;
+  --sunken: #070c0d;
+  --text: #e8e5dc;
+  --muted: #8fa09d;
+  --border: #1d2729;
+  --line: #334648;
+}
+
+:root[data-palette="pine"] {
+  /* Pine: forest green on deep navy. */
+  --accent: #46a872;
+  --sage: #a3b79d;
+  --on-accent: #06180f;
+  --bg: #0d1826;
+  --surface: #142236;
+  --sunken: #091220;
+  --text: #e4ecf3;
+  --muted: #93a7bb;
+  --border: #1f3148;
+  --line: #354a63;
+}
+
+:root[data-palette="vinyl"] {
+  /* Vinyl: violet on near-black, sampled from the Music Musings UI. */
+  --accent: #a78bfa;
+  --sage: #a1a1aa;
+  --on-accent: #16081f;
+  --bg: #121212;
+  --surface: #1a1a1c;
+  --sunken: #0d0d0e;
+  --text: #ededed;
+  --muted: #a1a1aa;
+  --border: #2a2a2d;
+  --line: #3f3f45;
+}
+
+:root[data-palette="oxide"] {
+  /* Oxide: burnt orange on warm charcoal. */
+  --accent: #ff8a5c;
+  --sage: #a89f96;
+  --on-accent: #1a0c05;
+  --bg: #141210;
+  --surface: #1e1b18;
+  --sunken: #0e0c0b;
+  --text: #efe9e3;
+  --muted: #a89f96;
+  --border: #2e2a26;
+  --line: #45403a;
+}
+
+:root[data-palette="signal"] {
+  /* Signal: acid lime on true black. */
+  --accent: #bef264;
+  --sage: #9ea6a3;
+  --on-accent: #121505;
+  --bg: #0f1011;
+  --surface: #17191a;
+  --sunken: #0a0b0b;
+  --text: #eceef0;
+  --muted: #9ea6a3;
+  --border: #26292a;
+  --line: #3b3f40;
+}
+
+:root[data-palette="cobalt"] {
+  /* Cobalt: electric blue on slate. */
+  --accent: #7aa2f7;
+  --sage: #9aa4b2;
+  --on-accent: #0a1020;
+  --bg: #0d1117;
+  --surface: #161b22;
+  --sunken: #090d12;
+  --text: #e6edf3;
+  --muted: #9aa4b2;
+  --border: #262c36;
+  --line: #3a424e;
+}
+
+:root[data-palette="ember"] {
+  /* Ember: gold on warm black. */
+  --accent: #f0b429;
+  --sage: #a69d90;
+  --on-accent: #1a1203;
+  --bg: #121010;
+  --surface: #1c1917;
+  --sunken: #0c0a0a;
+  --text: #f0ebe4;
+  --muted: #a69d90;
+  --border: #2d2823;
+  --line: #443d34;
+}
+
+/* ---- 2. Shared tokens ---------------------------------------------------- */
+
+:root {
+  color-scheme: dark;
+
+  /* The Nerd Font patch is a local install, so prefer it and fall back to
+     the metrically identical webfont for everyone else. */
+  --font-mono:
+    "JetBrainsMono Nerd Font", "JetBrainsMono NF", "JetBrains Mono",
+    ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-body: var(--font-mono);
+  --font-heading: var(--font-mono);
+  --font-display: var(--font-mono);
+
+  --max: 1080px;
+  --measure: 40rem; /* prose never runs wider than this */
+}
+
+/* ---- 3. Base ------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 2rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.72; /* monospace needs more air between lines */
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums;
+  transition: filter 0.6s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body {
+    transition: none;
+  }
+}
+
+/* A film grain over the whole page. Flat dark navy is a big empty surface;
+   this gives it something to catch the light on. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* The CRT layer. Scanlines and a vignette, sitting over everything but
+   catching no clicks. Static on purpose: nothing here pulses or flickers. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 49;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.11) 0 1px,
+      transparent 1px 3px
+    ),
+    radial-gradient(
+      ellipse 120% 90% at 50% 50%,
+      transparent 55%,
+      rgba(0, 0, 0, 0.35) 100%
+    );
+}
+
+/* The CRT layer is a dark-room effect. On a near-white page it only needs
+   to hint, or the corners read as grubby rather than as glass. */
+/* Easter egg: Konami code shifts the whole palette */
+body.party {
+  filter: hue-rotate(140deg) saturate(1.15);
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Links grow an underline rather than arriving with one */
+a {
+  color: var(--accent);
+  text-decoration: none;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.25s ease;
+  padding-bottom: 1px;
+}
+a:hover,
+a:focus-visible {
+  background-size: 100% 1px;
+}
+.btn,
+#nav a {
+  background-image: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  a {
+    transition: none;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+h1,
+h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.045em;
+  margin: 0 0 0.4em;
+}
+
+h3,
+h4 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.025em;
+  margin: 0 0 0.5em;
+}
+
+h1 {
+  font-size: clamp(2.2rem, 7.5vw, 5rem);
+}
+h2 {
+  font-size: clamp(1.5rem, 3.2vw, 2.1rem);
+  letter-spacing: -0.035em;
+}
+h3 {
+  font-size: 1.05rem;
+}
+
+p {
+  margin: 0 0 1em;
+}
+
+/* The surname in the wordmark, the way Music Musings splits its own */
+.accent-word {
+  color: var(--accent);
+}
+
+/* The mono meta layer: labels, numbers, captions */
+.eyebrow,
+.chip,
+.tl-when,
+.project-context,
+.skill-group h3,
+.outcome h4,
+.facts dt,
+.now-grid h3,
+.interests h3 {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.skip {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  background: var(--accent);
+  color: var(--on-accent);
+  padding: 0.6rem 1rem;
+  border-radius: 2px;
+  z-index: 20;
+}
+.skip:focus {
+  top: 1rem;
+}
+
+/* ---- Section links ------------------------------------------------------- */
+/* There is no header: the sections announce themselves, and the hero carries
+   the two calls to action. These links sit at the foot of the page, for
+   anyone who has read to the bottom and wants to go back to something. */
+
+#nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+#nav a {
+  padding-block: 0.3rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+#nav a:hover {
+  color: var(--text);
+}
+
+/* ---- Layout -------------------------------------------------------------- */
+
+main,
+.site-footer {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+main > section {
+  padding: 5rem 0;
+}
+
+.prose {
+  max-width: var(--measure);
+}
+
+/* Section headers read as a command and its output: the prompt line above,
+   the numbered heading below, a signal trace running out to the margin. */
+.sec-head {
+  margin-bottom: 3rem;
+}
+
+/* The command is the heading now. The written title is still in the markup
+   for screen readers and for the section's accessible name, just not drawn. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.sec-cmd {
+  font-family: var(--font-mono);
+  font-size: clamp(1.15rem, 2.4vw, 1.6rem);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  color: var(--text);
+  margin: 0;
+  white-space: nowrap;
+}
+/* A powerline prompt, built the way the real one is: a logo segment, the
+   working directory, and a chevron into the command. Drawn with CSS
+   triangles rather than the Nerd Font separator glyph, which would be tofu
+   for anyone who has not installed the patched font. */
+.pl {
+  display: inline-flex;
+  align-items: stretch;
+  vertical-align: baseline;
+  margin-right: 0.55rem;
+  font-size: 0.78em;
+  line-height: 1;
+}
+
+.pl-seg {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.34em 0.62em;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.pl-logo {
+  background: var(--accent);
+  color: var(--on-accent);
+  border-radius: 3px 0 0 3px;
+  padding-right: 0.5em;
+}
+.pl-logo .arch {
+  width: 1.05em;
+  height: 1.05em;
+  fill: currentColor;
+  display: block;
+}
+
+.pl-path {
+  background: var(--line);
+  color: var(--bg);
+}
+
+/* The chevrons: each takes the colour of the segment behind it */
+.pl-sep {
+  width: 0;
+  height: 0;
+  align-self: stretch;
+  border-top: 0.95em solid transparent;
+  border-bottom: 0.95em solid transparent;
+}
+.pl-sep-a {
+  border-left: 0.58em solid var(--accent);
+}
+.pl-sep-b {
+  border-left: 0.58em solid var(--line);
+}
+
+/* A shell comment after the command, naming the section the command opens */
+.pl-note {
+  margin-left: 0.9rem;
+  font-size: 0.62em;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--muted);
+}
+
+.pl-cmd {
+  color: var(--text);
+}
+
+.sec-line {
+  display: flex;
+  align-items: baseline;
+  gap: 1.1rem;
+}
+.sec-line {
+  flex-wrap: wrap;
+}
+/* A dashed signal trace running out to the margin, terminating in a block.
+   The dashes are drawn as a gradient so the whole thing is one element. */
+.sec-line::after {
+  content: "";
+  flex: 1;
+  height: 6px;
+  align-self: center;
+  margin-top: 0.4em;
+  background-image:
+    linear-gradient(var(--sage), var(--sage)),
+    repeating-linear-gradient(
+      to right,
+      var(--border) 0 5px,
+      transparent 5px 9px
+    );
+  background-size:
+    6px 6px,
+    100% 1px;
+  background-position:
+    right center,
+    left center;
+  background-repeat: no-repeat, repeat-x;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.15s;
+}
+.sec-head.in .sec-line::after {
+  transform: scaleX(1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .sec-line::after {
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Alternating ground, full width of the window, so the page has a rhythm
+   without introducing a second accent hue. */
+section.band {
+  position: relative;
+  isolation: isolate;
+}
+section.band::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  margin-left: -50vw;
+  background: var(--sunken);
+  z-index: -1;
+}
+
+/* ---- Hero ---------------------------------------------------------------- */
+
+.hero {
+  position: relative;
+  padding: 5rem 0 4rem !important;
+}
+
+/* A printer's dot grid behind the masthead, fading out as it travels */
+.hero-main,
+#hero-name,
+#hero-role {
+  position: relative;
+}
+.hero-main {
+  z-index: 1;
+}
+
+/* Two columns once there is room for the name and the scope side by side.
+   Below that they stack, and the scope is dropped. */
+/* The name arrives a character at a time, fading in place. Nothing moves:
+   an earlier version slid each letter up as it appeared, which read as the
+   whole word hopping. */
+.ch {
+  display: inline-block;
+}
+/* A full monospace space is very wide at display sizes, so the word gap
+   gets trimmed by hand. */
+.ch-space {
+  width: 0.42em;
+}
+.ch-in {
+  animation: ch-in 0.45s ease-out both;
+  animation-delay: calc(var(--c, 0) * 26ms + 150ms);
+}
+@keyframes ch-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* The oscilloscope. Colour comes from the span classes the script emits, so
+   the trace, its glow, the second wave and the grid each read separately. */
+.hero-art {
+  position: absolute;
+  top: 0.5rem;
+  right: 0;
+  bottom: 0;
+  width: min(72%, 52rem);
+  margin: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.18;
+  letter-spacing: 0;
+  white-space: pre;
+  color: var(--muted);
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    transparent 22%,
+    #000 58%,
+    #000 90%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    transparent 22%,
+    #000 58%,
+    #000 90%,
+    transparent 100%
+  );
+  z-index: 0;
+}
+.hero-art .a-grid,
+.edge-art .a-grid {
+  color: var(--line);
+}
+.hero-art .a-lo,
+.edge-art .a-lo {
+  color: color-mix(in srgb, var(--sage) 45%, transparent);
+}
+.hero-art .a-mid,
+.edge-art .a-mid {
+  color: color-mix(in srgb, var(--sage) 85%, transparent);
+}
+.hero-art .a-glow,
+.edge-art .a-glow {
+  color: color-mix(in srgb, var(--accent) 60%, transparent);
+}
+.hero-art .a-hi,
+.edge-art .a-hi {
+  color: var(--accent);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+.hero-art .a-crest,
+.edge-art .a-crest {
+  color: var(--text);
+  text-shadow:
+    0 0 3px var(--accent),
+    0 0 16px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ch-in {
+    animation: none;
+  }
+}
+
+.eyebrow {
+  color: var(--muted);
+  margin-bottom: 1.5rem;
+}
+.eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 1.75rem;
+  height: 1px;
+  margin-right: 0.75rem;
+  margin-bottom: 0.3em;
+  background: var(--sage);
+}
+
+/* Misregistered colour channels, the way a bad signal prints them.
+   Static, and small enough that it reads as print rather than as damage. */
+#hero-name {
+  margin-bottom: 2.5rem;
+  text-shadow:
+    -0.022em 0 0 rgba(255, 60, 40, 0.42),
+    0.022em 0 0 rgba(40, 220, 255, 0.34);
+}
+
+.hero-tagline {
+  font-size: 1.05rem;
+  color: var(--muted);
+  max-width: 34rem;
+  margin: 1.75rem 0 0;
+}
+
+.hero-photo img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 2px;
+  filter: grayscale(1);
+  transition: filter 0.4s ease;
+}
+.hero-photo img:hover {
+  filter: none;
+}
+
+/* ---- Power lines --------------------------------------------------------- */
+/* Breaks the container to run the full width of the window, and fades
+   upward so the poles emerge out of the page rather than sitting on a shelf. */
+.wire-band {
+  position: relative;
+  left: 50%;
+  width: 100vw;
+  margin-left: -50vw;
+  height: 18rem;
+  margin-bottom: -6rem;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0.62;
+  /* Crisp at the top where the cables are, dissolving downward, so the
+     poles recede into haze instead of standing on an invisible shelf. */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    #000 0%,
+    #000 58%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(to bottom, #000 0%, #000 58%, transparent 100%);
+}
+.wire-band svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ---- Shared pieces ------------------------------------------------------- */
+
+.lead {
+  font-size: 1.02rem;
+  max-width: var(--measure);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1.5rem;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.65rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.88rem;
+  background: transparent;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background 0.2s ease;
+}
+.btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+.btn-primary:hover {
+  color: var(--on-accent);
+  background: color-mix(in srgb, var(--accent) 86%, var(--text));
+  border-color: transparent;
+}
+
+.btn-small {
+  padding: 0.45rem 0.95rem;
+  font-size: 0.82rem;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+}
+
+.chip {
+  color: var(--muted);
+  padding: 0.18rem 0.55rem;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--line) 28%, transparent);
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+.chip:hover {
+  color: var(--text);
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  transform: translateY(-2px);
+}
+
+.chip-status {
+  display: inline-block;
+  white-space: nowrap; /* or a long title breaks the pill across two lines */
+  margin-left: 0.6rem;
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+}
+
+/* Label / value pairs */
+
+/* ---- About --------------------------------------------------------------- */
+
+.about-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr);
+  gap: 3rem;
+  align-items: start;
+}
+
+.about-grid .prose p:first-child {
+  font-size: 1.22rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+/* ---- Stats --------------------------------------------------------------- */
+/* No boxes. Hairline columns, and the numbers do the work. */
+
+/* ---- Projects ------------------------------------------------------------ */
+
+.project-list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6rem;
+}
+
+.project {
+  display: block;
+  min-width: 0;
+}
+
+.project-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 17rem;
+  gap: 3rem;
+  padding: 2rem 0 0;
+}
+.project-main {
+  min-width: 0;
+}
+
+/* The facts about the project, kept beside the prose rather than under it */
+/* The diagram follows the text, full width, so a reader meets the product
+   first and the explanation of the models second. */
+.project-diagram {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+
+.project-aside {
+  align-self: start;
+  position: sticky;
+  top: 5.5rem;
+  padding-left: 1.5rem;
+  border-left: 1px solid var(--border);
+}
+.project-aside .actions {
+  margin-top: 0;
+  flex-direction: column;
+  align-items: stretch;
+}
+.project-aside .actions .btn {
+  text-align: center;
+}
+.project-aside .chips {
+  margin-top: 1.25rem;
+}
+.project-aside .project-note {
+  margin-top: 1.25rem;
+}
+
+.project:hover h3 {
+  text-shadow:
+    -0.018em 0 0 rgba(255, 60, 40, 0.34),
+    0.018em 0 0 rgba(40, 220, 255, 0.28);
+}
+
+.project-context {
+  margin: 0 0 0.6rem;
+  color: var(--sage);
+}
+
+.project h3 {
+  transition: text-shadow 0.25s ease;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.3rem, 2.6vw, 1.85rem);
+  letter-spacing: -0.04em;
+  line-height: 1.15;
+  margin-bottom: 0.5rem;
+}
+
+/* A window frame, so a dark screenshot reads as a screenshot rather than
+   as more of this page */
+.project-shot {
+  background: var(--sunken);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.shot-chrome {
+  display: flex;
+  align-items: center;
+  height: 1.9rem;
+  padding: 0 0.85rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.shot-chrome::before {
+  content: "";
+  flex: none;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--line);
+  box-shadow:
+    0.8rem 0 0 var(--line),
+    1.6rem 0 0 var(--line);
+}
+
+.shot-title {
+  margin-left: 2.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.project-img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  .chip,
+  .btn-primary::after {
+    transition: none;
+  }
+}
+
+.highlights {
+  margin: 1.75rem 0 0;
+  padding: 0;
+  list-style: none;
+  max-width: var(--measure);
+  display: grid;
+  gap: 1.1rem;
+}
+
+.highlights li {
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.outcome {
+  margin-top: 2rem;
+  max-width: var(--measure);
+}
+.outcome h4 {
+  margin: 0 0 0.6rem;
+  color: var(--sage);
+  font-weight: 500;
+}
+.outcome p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.project-note {
+  margin: 1.5rem 0 0;
+  padding: 0.75rem 0 0.75rem 1rem;
+  border-left: 2px solid var(--accent);
+  color: var(--muted);
+  font-size: 0.88rem;
+  max-width: var(--measure);
+}
+
+/* ---- Screenshot strip ---------------------------------------------------- */
+
+/* One large screenshot, with the rest as a strip beneath it. Picking a
+   thumbnail swaps the large one; clicking the large one opens the lightbox. */
+.screen-main {
+  display: block;
+  width: 100%;
+  padding: 0;
+  font: inherit;
+  background: none;
+  border: none;
+  cursor: zoom-in;
+}
+.screen-main .project-img {
+  transition: opacity 0.18s ease;
+}
+.screen-main.is-swap .project-img {
+  opacity: 0;
+}
+
+.screen-caption {
+  margin: 0.7rem 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.screen-thumbs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  gap: 0.6rem;
+  margin: 0.9rem 0 0;
+}
+.thumb {
+  padding: 0;
+  font: inherit;
+  background: var(--sunken);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  cursor: pointer;
+  opacity: 0.55;
+  transition:
+    opacity 0.2s ease,
+    border-color 0.2s ease;
+}
+.thumb:hover {
+  opacity: 1;
+  border-color: var(--line);
+}
+.thumb[aria-pressed="true"] {
+  opacity: 1;
+  border-color: var(--accent);
+}
+.thumb img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: contain;
+  object-position: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .screen-main .project-img,
+  .thumb {
+    transition: none;
+  }
+}
+
+.lightbox {
+  position: relative;
+  border: none;
+  padding: 0;
+  background: transparent;
+  overflow: visible;
+  max-width: min(96vw, 1100px);
+  max-height: 92vh;
+  color: #fff;
+}
+.lightbox::backdrop {
+  background: rgba(0, 0, 0, 0.88);
+}
+
+.lightbox-img {
+  width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+/* Sits over the dimmed page, so it carries its own contrast */
+.lightbox-caption {
+  margin: 0.85rem auto 0;
+  max-width: 44rem;
+  text-align: center;
+  font-size: 0.88rem;
+  color: #f4f4f5;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.95);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  font: inherit;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: #fff;
+  background: rgba(10, 10, 10, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  border-radius: 2px;
+  width: 2.1rem;
+  height: 2.1rem;
+  cursor: pointer;
+}
+.lightbox-close:hover {
+  background: rgba(10, 10, 10, 0.95);
+}
+
+/* ---- Model architecture diagrams ----------------------------------------- */
+
+/* These three are data colours, not brand colours, so they stay fixed across
+   every palette. They deliberately avoid the accent's hue family, so a figure
+   never reads as branded. Violet / azure / rose clears the lightness band,
+   chroma floor, CVD separation and contrast in both modes. Nothing is
+   identified by colour alone: every tab and every mark is labelled. */
+.d-ensemble {
+  --m: #8b5cf6;
+}
+.d-swin {
+  --m: #2a9bd4;
+}
+.d-unetpp {
+  --m: #d4608f;
+}
+
+.diagram {
+  background: var(--sunken);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.diagram-tabs {
+  display: flex;
+  gap: 0;
+  padding: 0 0.5rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+
+.diagram-tab {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.01em;
+  color: var(--muted);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.85rem 0.9rem;
+  margin-bottom: -1px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+.diagram-tab:hover {
+  color: var(--text);
+}
+.diagram-tab::before {
+  content: "\25b8";
+  margin-right: 0.45em;
+  opacity: 0;
+}
+.diagram-tab[aria-selected="true"]::before {
+  opacity: 1;
+}
+.diagram-tab[aria-selected="true"] {
+  color: var(--text);
+  border-bottom-color: var(--m);
+}
+.diagram-tab[aria-selected="true"]::before {
+  color: var(--m);
+}
+
+.diagram-panel {
+  padding: 1.25rem 0 0.25rem;
+}
+.diagram-panel:focus-visible {
+  outline-offset: -3px;
+}
+
+/* The drawings have a fixed minimum legible width. Let them scroll on a
+   phone rather than shrinking the labels to nothing. */
+.diagram-scroll {
+  overflow-x: auto;
+  padding: 0 1rem;
+}
+
+/* ---- Drawings ------------------------------------------------------------ */
+/* Every colour comes from the tab's --m, set on the panel, so each model keeps
+   its own hue while the drawing language stays the same. */
+
+.dg-svg svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-width: 640px;
+  font-family: var(--font-mono);
+}
+.dg-svg svg text {
+  fill: var(--muted);
+  font-size: 11px;
+}
+.dg-svg svg .dg-label {
+  fill: var(--sage);
+}
+.dg-svg svg .dg-small {
+  font-size: 10.5px;
+}
+.dg-svg svg .dg-faint {
+  opacity: 0.8;
+}
+.dg-arrow {
+  fill: var(--m);
+}
+
+.dg-node,
+.dg-fold {
+  outline: none;
+}
+.dg-node {
+  cursor: pointer;
+}
+.dg-edge,
+.dg-node,
+.dg-node *,
+.dg-fold,
+.dg-wins,
+.dg-slab {
+  transition:
+    opacity 0.2s ease,
+    stroke-width 0.2s ease,
+    fill-opacity 0.2s ease,
+    transform 0.22s ease;
+}
+.dg-svg .is-dim {
+  opacity: 0.13;
+}
+.dg-svg .is-off {
+  opacity: 0;
+}
+
+/* wired: connections that pulse in the direction data flows */
+.dg-wire {
+  fill: none;
+  stroke: var(--m);
+  stroke-width: 1.4;
+  stroke-dasharray: 5 9;
+  animation: dg-flow 1.5s linear infinite;
+}
+.dg-wire.up {
+  opacity: 0.75;
+}
+.dg-wire.down {
+  stroke: var(--line);
+  stroke-width: 2;
+  stroke-dasharray: 2 6;
+}
+.dg-wire.is-lit {
+  stroke-width: 2.6;
+  opacity: 1;
+  animation-duration: 0.5s;
+  filter: drop-shadow(0 0 5px var(--m));
+}
+.dg-fold.is-sel .dg-wire {
+  stroke-width: 2.4;
+  animation-duration: 0.55s;
+  filter: drop-shadow(0 0 4px var(--m));
+}
+@keyframes dg-flow {
+  to {
+    stroke-dashoffset: -14;
+  }
+}
+
+.dg-svg .hex,
+.dg-hexn {
+  fill: var(--surface);
+  stroke: var(--m);
+  stroke-width: 1.6;
+}
+.dg-node.enc .hex {
+  stroke: var(--line);
+}
+.dg-svg svg text.id,
+.dg-svg svg text.dg-id {
+  fill: var(--text);
+  font-size: 10px;
+  text-anchor: middle;
+  pointer-events: none;
+}
+.dg-node:focus-visible .hex {
+  stroke-width: 3;
+  stroke: var(--accent);
+}
+.dg-node.is-sel .hex {
+  fill: color-mix(in srgb, var(--m) 40%, var(--surface));
+  filter: drop-shadow(0 0 8px var(--m));
+  stroke-width: 2.6;
+}
+.dg-node.is-src .hex {
+  fill: color-mix(in srgb, var(--m) 18%, var(--surface));
+}
+
+/* ensemble */
+.dg-cell {
+  fill: none;
+  stroke: var(--line);
+}
+.dg-cell.held {
+  fill: var(--m);
+  stroke: var(--m);
+}
+.dg-model {
+  fill: var(--surface);
+  stroke: var(--m);
+  stroke-width: 1.2;
+}
+.dg-out {
+  fill: none;
+  stroke: var(--m);
+  stroke-width: 1.6;
+  stroke-dasharray: 5 9;
+  animation: dg-flow 1.5s linear infinite;
+}
+.dg-frame {
+  fill: var(--surface);
+  stroke: var(--line);
+}
+.dg-organ {
+  fill: none;
+  stroke: var(--line);
+}
+.dg-blob-lo {
+  fill: var(--m);
+  opacity: 0.2;
+}
+.dg-blob {
+  fill: var(--m);
+  opacity: 0.85;
+}
+
+/* slabs: footprint shrinks with resolution, thickness grows with channels */
+.dg-slab .top {
+  fill: color-mix(in srgb, var(--m) 26%, var(--surface));
+  stroke: var(--m);
+  stroke-width: 1.2;
+}
+.dg-slab .lft {
+  fill: color-mix(in srgb, var(--m) 12%, var(--sunken));
+  stroke: var(--m);
+}
+.dg-slab .rgt {
+  fill: color-mix(in srgb, var(--m) 19%, var(--sunken));
+  stroke: var(--m);
+}
+.dg-slab.dec .top {
+  fill: color-mix(in srgb, var(--line) 55%, var(--surface));
+  stroke: var(--muted);
+}
+.dg-slab.dec .lft,
+.dg-slab.dec .rgt {
+  fill: color-mix(in srgb, var(--line) 30%, var(--sunken));
+  stroke: var(--line);
+}
+.dg-skip {
+  fill: none;
+  stroke: var(--m);
+  stroke-width: 1.1;
+  stroke-dasharray: 3 4;
+  opacity: 0.5;
+}
+.dg-grid {
+  stroke: var(--m);
+  stroke-width: 0.7;
+  opacity: 0.35;
+}
+.dg-win {
+  fill: none;
+  stroke: var(--m);
+  stroke-width: 2;
+}
+.dg-home {
+  fill: var(--m);
+  fill-opacity: 0.14;
+  stroke: none;
+}
+.dg-mark {
+  fill: var(--text);
+  stroke: var(--m);
+  stroke-width: 1.5;
+  filter: drop-shadow(0 0 6px var(--m));
+}
+.dg-leader {
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 0.8;
+}
+
+/* detail views: printed output */
+.dg-pre {
+  margin: 0;
+  padding-left: 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  line-height: 1.4;
+  white-space: pre;
+  color: var(--muted);
+}
+.dg-prov {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 15rem;
+  gap: 2rem;
+  min-width: 640px;
+}
+.dg-table {
+  min-width: 0;
+  padding: 0.5rem 0 0.25rem;
+}
+.dg-stat {
+  margin: 1rem 0 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.dg-stat b {
+  color: var(--text);
+  font-weight: 500;
+}
+.t-id {
+  color: var(--text);
+}
+.t-enc {
+  color: var(--sage);
+}
+.t-skip {
+  color: var(--m);
+}
+.t-up {
+  color: color-mix(in srgb, var(--m) 60%, var(--text));
+}
+.t-down {
+  color: var(--muted);
+}
+.t-seen {
+  color: var(--line);
+}
+.g-sel {
+  color: var(--text);
+  text-shadow: 0 0 10px var(--m);
+}
+.g-src {
+  color: var(--m);
+}
+.g-anc {
+  color: color-mix(in srgb, var(--m) 55%, var(--muted));
+}
+.g-off {
+  color: var(--line);
+}
+
+.d-controls.d-views {
+  padding: 0.85rem 1.25rem 0;
+}
+.d-holder:empty {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dg-wire,
+  .dg-out {
+    animation: none;
+  }
+  .dg-edge,
+  .dg-node,
+  .dg-node *,
+  .dg-fold,
+  .dg-wins,
+  .dg-slab {
+    transition: none;
+  }
+}
+
+.d-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 1rem 1.25rem 0;
+}
+
+.d-btn::before {
+  content: "[";
+  margin-right: 0.3em;
+  opacity: 0.45;
+}
+.d-btn::after {
+  content: "]";
+  margin-left: 0.3em;
+  opacity: 0.45;
+}
+.d-btn[aria-pressed="true"]::before,
+.d-btn[aria-pressed="true"]::after {
+  opacity: 1;
+}
+
+.d-btn {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  letter-spacing: 0.01em;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 0.35rem 0.6rem;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+.d-btn:hover {
+  color: var(--text);
+  border-color: var(--m);
+}
+.d-btn[aria-pressed="true"] {
+  color: var(--text);
+  border-color: var(--m);
+  background: color-mix(in srgb, var(--m) 10%, transparent);
+}
+
+/* What the interaction is currently telling you. Fixed height, so the panel
+   does not jump as the text changes. */
+.diagram-readout::before {
+  content: ">";
+  color: var(--m);
+  margin-right: 0.6em;
+}
+
+.diagram-readout {
+  margin: 0.85rem 0 0;
+  padding: 0 1.25rem 0.9rem;
+  min-height: 2.6em;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.diagram-caption {
+  margin: 0.5rem 0 0;
+  padding: 0 1.25rem 0.75rem;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.diagram-note {
+  margin: 0;
+  padding: 0 1.25rem 1.1rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  opacity: 0.8;
+}
+
+/* ---- Reticle corners ----------------------------------------------------- */
+/* Two opposite corners rather than four: enough to read as a framed
+   instrument, not enough to look like a sticker. */
+.project-shot,
+.diagram {
+  position: relative;
+}
+.project-shot::before,
+.project-shot::after,
+.diagram::before,
+.diagram::after {
+  content: "";
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  pointer-events: none;
+  border: 0 solid var(--sage);
+  opacity: 0.8;
+}
+.project-shot::before,
+.diagram::before {
+  top: -5px;
+  left: -5px;
+  border-top-width: 1px;
+  border-left-width: 1px;
+}
+.project-shot::after,
+.diagram::after {
+  bottom: -5px;
+  right: -5px;
+  border-bottom-width: 1px;
+  border-right-width: 1px;
+}
+
+/* ---- Reveal on scroll ---------------------------------------------------- */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.55s ease,
+    transform 0.55s ease;
+  transition-delay: calc(var(--i, 0) * 40ms);
+}
+.reveal.in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ---- Toolkit ------------------------------------------------------------- */
+/* A spec sheet, not a row of cards. Cells share their hairlines. */
+
+.lang-grid {
+  display: grid;
+  /* 260px lands on three columns at full width, so the nine languages
+     make a complete grid with no ragged last row. */
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-top: 1px solid var(--border);
+  border-left: 1px solid var(--border);
+}
+
+.lang {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    "icon name"
+    "icon note";
+  column-gap: 0.85rem;
+  align-content: center;
+  padding: 1.15rem 1.1rem;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s ease;
+}
+.lang {
+  position: relative;
+}
+.lang::before,
+.lang::after {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border: 0 solid var(--accent);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+.lang::before {
+  top: 5px;
+  left: 5px;
+  border-top-width: 1px;
+  border-left-width: 1px;
+}
+.lang::after {
+  bottom: 5px;
+  right: 5px;
+  border-bottom-width: 1px;
+  border-right-width: 1px;
+}
+.lang:hover::before,
+.lang:hover::after {
+  opacity: 1;
+}
+.lang:hover {
+  background: var(--sunken);
+}
+
+.lang-icon {
+  grid-area: icon;
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  color: var(--muted);
+  transition: color 0.2s ease;
+}
+.lang:hover .lang-icon {
+  color: var(--accent);
+}
+.lang-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.lang-name {
+  grid-area: name;
+  font-weight: 650;
+  font-size: 0.98rem;
+  letter-spacing: -0.01em;
+}
+
+.lang-note {
+  grid-area: note;
+  font-size: 0.73rem;
+  line-height: 1.35;
+  color: var(--muted);
+  margin-top: 0.1rem;
+}
+
+.skill-groups {
+  display: grid;
+  gap: 0;
+  margin-top: 3.5rem;
+}
+
+.skill-group {
+  display: grid;
+  grid-template-columns: 11rem minmax(0, 1fr);
+  gap: 1.5rem;
+  padding: 0.85rem 0;
+}
+.skill-group h3 {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 500;
+  padding-top: 0.35rem;
+}
+.skill-group .chips {
+  margin-top: 0;
+}
+.skill-group .chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ---- Background timeline ------------------------------------------------- */
+
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* A spine runs down the gutter between the dates and the entries, with a
+   dot per entry. The dot's halo is painted in the page background so it
+   masks the line behind it. */
+.tl-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 10.5rem minmax(0, 1fr);
+  gap: 0 2.5rem;
+  padding: 1.75rem 0;
+}
+
+.tl-item::before {
+  content: "";
+  position: absolute;
+  left: calc(10.5rem + 1.25rem);
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--border);
+}
+.tl-item:first-child::before {
+  top: 2.1rem;
+}
+.tl-item:last-child::before {
+  bottom: auto;
+  height: 2.1rem;
+}
+
+.tl-item::after {
+  content: "";
+  position: absolute;
+  left: calc(10.5rem + 1.25rem - 0.3rem);
+  top: 1.8rem;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow:
+    0 0 0 4px var(--bg),
+    0 0 0 6px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.tl-when {
+  white-space: nowrap;
+  margin: 0;
+  padding-top: 0.45rem;
+  color: var(--muted);
+}
+
+/* A stub off the spine into each entry, so the line reads as a bus with
+   things tapped off it rather than a decorative rule. */
+.tl-body::before {
+  content: "";
+  position: absolute;
+  left: calc(10.5rem + 1.25rem);
+  top: 2.1rem;
+  width: 1.25rem;
+  height: 1px;
+  background: var(--border);
+}
+
+.tl-body h3 {
+  margin-bottom: 0.2rem;
+  font-size: 1.25rem;
+}
+
+.tl-place {
+  margin: 0 0 0.6rem;
+  color: var(--sage);
+  font-weight: 500;
+  font-size: 0.92rem;
+}
+.tl-detail {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+  max-width: var(--measure);
+}
+.tl-body .chips {
+  margin-top: 0.9rem;
+}
+
+/* ---- Right now ----------------------------------------------------------- */
+
+.now-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-top: 1px solid var(--border);
+}
+
+.now-grid > div {
+  padding: 2rem 2rem 2rem 0;
+}
+.now-grid > div + div {
+  border-left: 1px solid var(--border);
+  padding-left: 2rem;
+}
+.now-grid > div:empty {
+  display: none;
+}
+
+.now-grid h3,
+.interests h3 {
+  color: var(--muted);
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.plain-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.plain-list li {
+  padding: 0.4rem 0;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+.next-title {
+  margin-bottom: 0.6rem;
+  font-size: 1.05rem;
+}
+
+.interests {
+  margin-top: 3rem;
+}
+
+/* Same treatment as the toolkit cells: fill, accent, and a reticle at two
+   opposite corners. Scaled down, because a chip is a much smaller target. */
+.interests .chip {
+  position: relative;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+.interests .chip::before,
+.interests .chip::after {
+  content: "";
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border: 0 solid var(--accent);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+.interests .chip::before {
+  top: 2px;
+  left: 2px;
+  border-top-width: 1px;
+  border-left-width: 1px;
+}
+.interests .chip::after {
+  bottom: 2px;
+  right: 2px;
+  border-bottom-width: 1px;
+  border-right-width: 1px;
+}
+.interests .chip:hover {
+  background: var(--sunken);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.interests .chip:hover::before,
+.interests .chip:hover::after {
+  opacity: 1;
+}
+.interests .chips {
+  margin-top: 0.75rem;
+}
+
+/* ---- Contact ------------------------------------------------------------- */
+
+#contact .lead {
+  font-size: 1.15rem;
+  line-height: 1.45;
+  max-width: 34rem;
+}
+
+/* The address itself, under the buttons, for anyone who wants to copy it */
+.contact-address {
+  margin: 1.5rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.contact-address a {
+  color: var(--muted);
+}
+.contact-address a:hover {
+  color: var(--accent);
+}
+
+/* ---- Footer -------------------------------------------------------------- */
+
+/* A burst of signal across the foot of the page, thinning out to nothing */
+.site-footer::before {
+  content: "";
+  display: block;
+  height: 9px;
+  margin-bottom: 1.75rem;
+  opacity: 0.4;
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--line) 0 2px,
+    transparent 2px 5px,
+    var(--line) 5px 6px,
+    transparent 6px 12px,
+    var(--line) 12px 15px,
+    transparent 15px 17px,
+    var(--line) 17px 18px,
+    transparent 18px 25px
+  );
+  -webkit-mask-image: linear-gradient(to right, #000, transparent 88%);
+  mask-image: linear-gradient(to right, #000, transparent 88%);
+}
+
+.site-footer {
+  padding-top: 2.5rem;
+  padding-bottom: 4rem;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+}
+
+/* ---- Small screens ------------------------------------------------------- */
+
+@media (max-width: 860px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+}
+
+@media (max-width: 680px) {
+  #nav {
+    gap: 0.25rem 1.1rem;
+  }
+
+  main > section {
+    padding: 3.5rem 0;
+  }
+  .hero {
+    padding: 3rem 0 3.5rem !important;
+  }
+  .sec-head {
+    margin-bottom: 2rem;
+  }
+  .sec-cmd {
+    white-space: normal;
+  }
+
+  .hero-art {
+    display: none;
+  }
+  .hero::before {
+    height: 13rem;
+  }
+
+  .project-body {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+    padding-top: 1.5rem;
+  }
+  .project-aside {
+    position: static;
+    padding-left: 0;
+    border-left: none;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+  .project-aside .actions {
+    flex-direction: row;
+  }
+  .project-list {
+    gap: 4rem;
+  }
+
+  .lang-grid {
+    grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+  }
+  .skill-group {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  .tl-item {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+    padding-left: 1.6rem;
+  }
+  .tl-item::before {
+    left: 0.3rem;
+  }
+  .tl-item::after {
+    left: 0;
+  }
+  .tl-body::before {
+    display: none;
+  }
+
+  .now-grid {
+    grid-template-columns: 1fr;
+  }
+  .now-grid > div {
+    padding: 1.75rem 0;
+  }
+  .now-grid > div + div {
+    border-left: none;
+    border-top: 1px solid var(--border);
+    padding-left: 0;
+  }
+
+  .diagram-caption,
+  .diagram-note {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* The drawings are wider than a phone, so say so rather than leaving the
+     reader to discover the sideways scroll by accident. */
+  .diagram-scroll::after {
+    content: "scroll the diagram sideways →";
+    display: block;
+    position: sticky;
+    left: 0;
+    width: 100%;
+    padding-top: 0.5rem;
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-art {
+    display: none;
+  }
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+}
+
+/* ---- Gallery slides that are drawn, not photographed --------------------- */
+
+.dg-green {
+  --m: var(--accent);
+}
+
+.screen-stage {
+  position: relative;
+  overflow: hidden;
+  background: var(--sunken);
+  transition: opacity 0.18s ease;
+}
+.screen-stage.is-swap {
+  opacity: 0;
+}
+.screen-stage .screen-main,
+.screen-stage .screen-main .project-img {
+  height: 100%;
+}
+.screen-stage.is-graph {
+  overflow-x: auto;
+}
+.screen-stage.is-graph .dg-svg svg {
+  min-width: 720px;
+}
+
+.dg-box {
+  fill: var(--surface);
+  stroke: var(--line);
+  stroke-width: 1.3;
+}
+.dg-node.core .dg-box {
+  stroke: var(--m);
+}
+.dg-node.lib .dg-box {
+  stroke: var(--sage);
+}
+.dg-node.store .dg-box {
+  stroke: var(--muted);
+  stroke-dasharray: 4 3;
+}
+.dg-node.is-sel .dg-box {
+  fill: color-mix(in srgb, var(--m) 24%, var(--surface));
+  stroke: var(--m);
+  filter: drop-shadow(0 0 7px var(--m));
+}
+.dg-node.is-src .dg-box {
+  fill: color-mix(in srgb, var(--m) 10%, var(--surface));
+}
+.dg-node:focus-visible .dg-box,
+.dg-node:focus-visible .dg-body {
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+.dg-svg svg text.dg-title {
+  fill: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+}
+.dg-svg svg text.dg-sub {
+  font-size: 9.5px;
+}
+.dg-svg svg text.dg-kick {
+  fill: var(--sage);
+  font-size: 9.5px;
+}
+.dg-group {
+  fill: none;
+  stroke: var(--line);
+  stroke-dasharray: 2 5;
+}
+.dg-edge.is-lit .dg-wire {
+  stroke-width: 2.6;
+  opacity: 1;
+  animation-duration: 0.5s;
+  filter: drop-shadow(0 0 5px var(--m));
+}
+.dg-svg svg text.dg-elabel {
+  fill: var(--text);
+  font-size: 10px;
+  opacity: 0;
+  paint-order: stroke;
+  stroke: var(--sunken);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+  transition: opacity 0.2s ease;
+}
+.dg-edge.is-lit .dg-elabel {
+  opacity: 1;
+}
+
+/* the schema's tables */
+.dg-body {
+  fill: var(--surface);
+  stroke: var(--line);
+  stroke-width: 1.2;
+}
+.dg-head {
+  fill: color-mix(in srgb, var(--m) 22%, var(--surface));
+  stroke: var(--line);
+  stroke-width: 1.2;
+}
+.dg-table.is-sel .dg-head {
+  fill: color-mix(in srgb, var(--m) 45%, var(--surface));
+}
+.dg-table.is-sel .dg-body,
+.dg-table.is-src .dg-body {
+  stroke: var(--m);
+}
+.dg-table.is-sel {
+  filter: drop-shadow(0 0 6px var(--m));
+}
+.dg-svg svg text.dg-field {
+  fill: var(--text);
+  font-size: 11px;
+}
+.dg-svg svg text.dg-key {
+  fill: var(--sage);
+  font-size: 8.5px;
+}
+.dg-line,
+.dg-end {
+  fill: none;
+  stroke: color-mix(in srgb, var(--m) 70%, var(--muted));
+  stroke-width: 1.3;
+}
+.dg-rel.is-lit .dg-line,
+.dg-rel.is-lit .dg-end {
+  stroke: var(--m);
+  stroke-width: 2.2;
+  filter: drop-shadow(0 0 4px var(--m));
+}
+
+/* a thumbnail that is a miniature of the drawing */
+.thumb-graph {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--sunken);
+  pointer-events: none;
+}
+.thumb-graph svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.thumb-graph .dg-wire,
+.thumb-graph .dg-elabel {
+  animation: none;
+}
+
+/* a project's headline feature, between its highlights and its outcome */
+.feature {
+  margin-top: 2rem;
+  max-width: var(--measure);
+}
+.feature h4 {
+  margin: 0 0 0.6rem;
+  color: var(--sage);
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  font-weight: 500;
+}
+.feature p {
+  margin: 0 0 0.9rem;
+}
+.feature-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.7rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+.feature-list li {
+  position: relative;
+  padding-left: 1.2rem;
+}
+.feature-list li::before {
+  content: ">";
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .screen-stage,
+  .dg-svg svg text.dg-elabel {
+    transition: none;
+  }
+}
+
+/* ---- The side rails ------------------------------------------------------ */
+/* Fixed to the viewport, in the margin either side of the content. Hidden
+   until the margin is wide enough to hold a rail without crowding the text. */
+
+.edge-art {
+  display: none;
+  position: fixed;
+  top: 1rem;
+  bottom: 0;
+  z-index: 0;
+  margin: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  line-height: 1.18;
+  letter-spacing: 0;
+  white-space: pre;
+  color: var(--muted);
+  opacity: 0.42;
+  /* start below the power lines; --rail-clip is set from script */
+  clip-path: inset(var(--rail-clip, 0px) 0 0 0);
+}
+.edge-left {
+  left: 0.75rem;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    #000 0%,
+    #000 35%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(to right, #000 0%, #000 35%, transparent 100%);
+}
+.edge-right {
+  right: 0.75rem;
+  -webkit-mask-image: linear-gradient(
+    to left,
+    #000 0%,
+    #000 35%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(to left, #000 0%, #000 35%, transparent 100%);
+}
+
+/* content is 1080px wide, so a rail needs the margin minus a breathing gap */
+@media (min-width: 1440px) {
+  .edge-art {
+    display: block;
+    width: min(13rem, calc((100vw - var(--max)) / 2 - 2.75rem));
+  }
+}
+
+@media print {
+  .edge-art {
+    display: none;
+  }
+}
+
+/* The rails are texture, not a feature: no glow, and the brightest cells are
+   only a little brighter than the rest. */
+.edge-art .a-hi {
+  color: color-mix(in srgb, var(--accent) 75%, transparent);
+  text-shadow: none;
+}
+.edge-art .a-glow {
+  color: color-mix(in srgb, var(--accent) 38%, transparent);
+}
+.edge-art .a-lo {
+  color: color-mix(in srgb, var(--sage) 40%, transparent);
+}
+
+/* "Outside of code" sits beside the About text now. It keeps the chip hover
+   from before, a little larger since it is a feature here, not an afterthought. */
+.about-grid .interests {
+  margin-top: 0;
+}
+.about-grid .interests h3 {
+  margin-bottom: 1rem;
+}
+.about-grid .interests .chip {
+  font-size: 0.88rem;
+  padding: 0.3rem 0.75rem;
+}
