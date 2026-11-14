@@ -236,7 +236,8 @@ a:focus-visible {
   background-size: 100% 1px;
 }
 .btn,
-#nav a {
+.tmux a,
+.pager a {
   background-image: none;
 }
 
@@ -318,28 +319,6 @@ p {
 }
 .skip:focus {
   top: 1rem;
-}
-
-/* ---- Section links ------------------------------------------------------- */
-/* There is no header: the sections announce themselves, and the hero carries
-   the two calls to action. These links sit at the foot of the page, for
-   anyone who has read to the bottom and wants to go back to something. */
-
-#nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem 1.5rem;
-  margin-bottom: 1.25rem;
-}
-
-#nav a {
-  padding-block: 0.3rem;
-  color: var(--muted);
-  font-size: 0.82rem;
-  font-weight: 500;
-}
-#nav a:hover {
-  color: var(--text);
 }
 
 /* ---- Layout -------------------------------------------------------------- */
@@ -1969,10 +1948,6 @@ section.band::before {
 }
 
 @media (max-width: 680px) {
-  #nav {
-    gap: 0.25rem 1.1rem;
-  }
-
   main > section {
     padding: 3.5rem 0;
   }
@@ -2354,4 +2329,213 @@ section.band::before {
 .about-grid .interests .chip {
   font-size: 0.88rem;
   padding: 0.3rem 0.75rem;
+}
+
+/* ---- Pages and the status bar -------------------------------------------- */
+/* One page shows at a time. The bar at the foot of the screen is the only
+   navigation: a session name, one numbered window per page with a star on
+   the current one, and a clock, the way tmux draws its status line. */
+
+.page-off {
+  display: none !important;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: calc(var(--tmux-h) + env(safe-area-inset-bottom, 0px));
+  --tmux-h: 2rem;
+}
+main {
+  flex: 1 0 auto;
+  width: 100%;
+}
+.site-footer {
+  width: 100%;
+  padding-bottom: 2rem;
+}
+
+/* a page arrives by fading in place; nothing slides */
+@keyframes page-in {
+  from {
+    opacity: 0;
+  }
+}
+.page-in {
+  animation: page-in 0.22s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-in {
+    animation: none;
+  }
+}
+
+/* the heading that takes focus after a page switch is not a control */
+main h1:focus,
+main h2:focus {
+  outline: none;
+}
+
+.tmux {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  display: flex;
+  align-items: stretch;
+  height: calc(var(--tmux-h) + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--sunken);
+  border-top: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.tmux-session {
+  display: flex;
+  align-items: stretch;
+  flex: none;
+}
+.tmux-seg {
+  display: flex;
+  align-items: center;
+  padding: 0 0.55rem 0 0.8rem;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 700;
+}
+.tmux-sep {
+  width: 0;
+  height: 0;
+  border-top: calc(var(--tmux-h) / 2) solid transparent;
+  border-bottom: calc(var(--tmux-h) / 2) solid transparent;
+  border-left: 0.62rem solid var(--accent);
+}
+
+.tmux-windows {
+  display: flex;
+  align-items: stretch;
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  padding: 0 0.35rem;
+  list-style: none;
+}
+.tmux-windows li {
+  display: flex;
+}
+.tw {
+  display: flex;
+  align-items: center;
+  min-width: 2rem;
+  justify-content: center;
+  padding: 0 0.6rem;
+  color: var(--muted);
+  text-decoration: none;
+}
+.tw:hover {
+  color: var(--text);
+  background: var(--surface);
+}
+.tw:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: -2px;
+}
+.tw-n {
+  color: var(--sage);
+}
+.tw-f {
+  visibility: hidden;
+  color: var(--accent);
+  font-weight: 700;
+}
+.tw[aria-current="page"] {
+  color: var(--text);
+  background: var(--surface);
+  box-shadow: inset 0 2px 0 var(--accent);
+}
+.tw[aria-current="page"] .tw-n {
+  color: var(--accent);
+  font-weight: 700;
+}
+.tw[aria-current="page"] .tw-f {
+  visibility: visible;
+}
+
+.tmux-right {
+  display: flex;
+  align-items: center;
+  flex: none;
+  gap: 0.9rem;
+  padding: 0 0.9rem;
+  color: var(--muted);
+}
+.tmux-clock {
+  color: var(--sage);
+}
+
+/* previous and next, at the foot of each page */
+.pager {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0 0 3rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+.pager a {
+  padding: 0.6rem 0;
+  color: var(--muted);
+  text-decoration: none;
+}
+.pager a:hover,
+.pager a:focus-visible {
+  color: var(--accent);
+}
+
+/* On a phone the bar is taller, for thumbs, and only the current window is
+   spelled out: the rest collapse to their numbers. */
+@media (max-width: 760px) {
+  body {
+    --tmux-h: 2.75rem;
+  }
+  .tmux-right {
+    display: none;
+  }
+  .tmux-windows {
+    justify-content: space-between;
+  }
+  .tw {
+    min-width: 2.75rem;
+    padding: 0 0.35rem;
+  }
+  .tw:not([aria-current="page"]) .tw-l,
+  .tw:not([aria-current="page"]) .tw-f {
+    display: none;
+  }
+}
+@media (max-width: 460px) {
+  .tmux-session {
+    display: none;
+  }
+}
+
+@media print {
+  .tmux,
+  .pager {
+    display: none;
+  }
+  .page-off {
+    display: block !important;
+  }
+  body {
+    display: block;
+    padding-bottom: 0;
+  }
 }

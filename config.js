@@ -171,9 +171,21 @@ window.SITE = {
         icon: "python",
         note: "Programming Fundamentals, Probabilities, Dissertation Pipeline, Streamlit, NumPy",
       },
-      { name: "SQL", icon: "sql", note: "Database Systems, Eloquent schemas, Linear & Relational Algebra" },
-      { name: "PHP", icon: "php", note: "Fundamental framework for Database Systems, Laravel backend for Music Musings" },
-      { name: "Java", icon: "java", note: "Programming Fundamentals, Spring Boot, Software Engineering Coursework" },
+      {
+        name: "SQL",
+        icon: "sql",
+        note: "Database Systems, Eloquent schemas, Linear & Relational Algebra",
+      },
+      {
+        name: "PHP",
+        icon: "php",
+        note: "Fundamental framework for Database Systems, Laravel backend for Music Musings",
+      },
+      {
+        name: "Java",
+        icon: "java",
+        note: "Programming Fundamentals, Spring Boot, Software Engineering Coursework",
+      },
       {
         name: "C++",
         icon: "cpp",
@@ -185,7 +197,11 @@ window.SITE = {
         icon: "html",
         note: "Basic web markup, Laravel Blade templates, Streamlit components",
       },
-      { name: "CSS", icon: "css", note: "Tailwind in Laravel, Basic styling of Web Components" },
+      {
+        name: "CSS",
+        icon: "css",
+        note: "Tailwind in Laravel, Basic styling of Web Components",
+      },
       {
         name: "Ada",
         icon: "ada",
@@ -332,6 +348,12 @@ window.SITE = {
       { label: "CV", url: "cv.pdf" },
     ],
   },
+
+  // ---- Status bar -----------------------------------------------------------
+  // The tmux-style bar at the foot of the screen that switches pages.
+  // `session` is the name in brackets on the left ("" uses your first name);
+  // `right` is the text beside the clock ("" hides it).
+  statusBar: { session: "", right: "bristol" },
 
   // ---- Side rails ----------------------------------------------------------
   // 'edgeArt' is the level metre on the left and right is the page.

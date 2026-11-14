@@ -3112,24 +3112,198 @@
     }
   }
 
+  // ---- Pages ---------------------------------------------------------------
+  // The site is one file, shown a page at a time. Each page is a window in the
+  // status bar at the foot of the screen, numbered the way tmux numbers them.
+  // The first page carries the masthead and the power lines as well as About.
+
+  var PAGES = [
+    { id: "about", label: "about", title: "", also: ["top", "wire-band"] },
+    { id: "projects", label: "projects", title: "Projects" },
+    { id: "toolkit", label: "toolkit", title: "Toolkit" },
+    { id: "background", label: "background", title: "Background" },
+    { id: "now", label: "now", title: "Right now" },
+    { id: "contact", label: "contact", title: "Contact" },
+  ];
+  var currentPage = "";
+  var baseTitle = doc.title;
+
+  function pageIndex(id) {
+    for (var i = 0; i < PAGES.length; i++) if (PAGES[i].id === id) return i;
+    return -1;
+  }
+
+  // "#projects" names a page, "#top" means the first one, anything else
+  // (the skip link's "#main", a typo) names none.
+  function pageFromHash(hash) {
+    var id = (hash || "").replace(/^#/, "");
+    if (id === "top") id = PAGES[0].id;
+    return pageIndex(id) === -1 ? "" : id;
+  }
+
+  function windowLink(p, n) {
+    return el("a", { href: "#" + p.id, class: "tw", "data-page": p.id }, [
+      el("span", { class: "tw-n", text: String(n) }),
+      el("span", { class: "tw-l", text: ":" + p.label }),
+      el("span", { class: "tw-f", "aria-hidden": "true", text: "*" }),
+    ]);
+  }
+
   function renderNav() {
-    var items = [
-      { id: "about", label: "About" },
-      { id: "projects", label: "Projects" },
-      { id: "toolkit", label: "Toolkit" },
-      { id: "background", label: "Background" },
-      { id: "now", label: "Now" },
-      { id: "contact", label: "Contact" },
-    ].filter(function (i) {
-      var s = byId(i.id);
+    // a section the config left empty is not a page
+    PAGES = PAGES.filter(function (p) {
+      var s = byId(p.id);
       return s && !s.hidden;
     });
-    mount(
-      "nav",
-      items.map(function (i) {
-        return link(i.label, "#" + i.id);
-      }),
-    );
+    var bar = S.statusBar || {};
+    var session =
+      bar.session ||
+      String(S.name || "")
+        .split(" ")[0]
+        .toLowerCase() ||
+      "main";
+    var clock = el("span", { class: "tmux-clock" });
+    function tick() {
+      var d = new Date();
+      clock.textContent =
+        ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
+    }
+    tick();
+    window.setInterval(tick, 15000);
+
+    mount("tmux", [
+      el("span", { class: "tmux-session", "aria-hidden": "true" }, [
+        el("span", { class: "tmux-seg", text: "[" + session + "]" }),
+        el("span", { class: "tmux-sep" }),
+      ]),
+      el(
+        "ol",
+        { class: "tmux-windows" },
+        PAGES.map(function (p, i) {
+          return el("li", {}, [windowLink(p, i + 1)]);
+        }),
+      ),
+      el("span", { class: "tmux-right", "aria-hidden": "true" }, [
+        bar.right === "" ? null : el("span", { text: bar.right || "bristol" }),
+        clock,
+      ]),
+    ]);
+  }
+
+  // Previous and next, at the foot of every page.
+  function renderPager(i) {
+    var prev = PAGES[i - 1];
+    var next = PAGES[i + 1];
+    mount("pager", [
+      prev
+        ? el("a", { href: "#" + prev.id, class: "pager-prev", rel: "prev" }, [
+            el("span", { "aria-hidden": "true", text: "<- " }),
+            el("span", { class: "sr-only", text: "Previous page: " }),
+            el("span", { text: i + ":" + prev.label }),
+          ])
+        : el("span"),
+      next
+        ? el("a", { href: "#" + next.id, class: "pager-next", rel: "next" }, [
+            el("span", { class: "sr-only", text: "Next page: " }),
+            el("span", { text: i + 2 + ":" + next.label }),
+            el("span", { "aria-hidden": "true", text: " ->" }),
+          ])
+        : el("span"),
+    ]);
+  }
+
+  // Show one page and put everything else away. `how.push` writes a history
+  // entry, so Back returns to the page before; `how.focus` moves keyboard
+  // focus to the new page's heading, so a screen reader announces it.
+  function showPage(id, how) {
+    how = how || {};
+    var i = pageIndex(id);
+    if (i === -1) i = 0;
+    var page = PAGES[i];
+    var changed = page.id !== currentPage;
+    currentPage = page.id;
+
+    PAGES.forEach(function (p) {
+      [p.id].concat(p.also || []).forEach(function (part) {
+        var n = byId(part);
+        if (!n) return;
+        n.classList.toggle("page-off", p !== page);
+        n.classList.toggle("page-in", p === page && changed && !!how.animate);
+      });
+    });
+
+    var links = doc.querySelectorAll("#tmux .tw");
+    for (var k = 0; k < links.length; k++) {
+      if (links[k].getAttribute("data-page") === page.id)
+        links[k].setAttribute("aria-current", "page");
+      else links[k].removeAttribute("aria-current");
+    }
+    renderPager(i);
+    doc.title = page.title ? page.title + " | " + S.name : baseTitle;
+    root.setAttribute("data-page", page.id);
+
+    if (how.push && changed) {
+      var url = window.location.pathname + window.location.search;
+      history.pushState(null, "", i === 0 ? url : url + "#" + page.id);
+    }
+    jump(0);
+    // anything that measures itself (the rails, the drawings) was laid out
+    // while its page was hidden, so let it measure again
+    window.dispatchEvent(new Event("resize"));
+
+    if (how.focus && changed) {
+      var heading = i === 0 ? byId("hero-name") : byId(page.id + "-title");
+      if (heading) {
+        heading.setAttribute("tabindex", "-1");
+        heading.focus({ preventScroll: true });
+      }
+    }
+  }
+
+  function initPages() {
+    doc.addEventListener("click", function (e) {
+      var a = e.target.closest && e.target.closest('a[href^="#"]');
+      if (!a || e.metaKey || e.ctrlKey || e.shiftKey) return;
+      var id = pageFromHash(a.getAttribute("href"));
+      if (!id) return;
+      e.preventDefault();
+      showPage(id, { push: true, focus: true, animate: !reducedMotion() });
+    });
+
+    // Back, Forward, and a #page typed into the address bar
+    function fromAddress() {
+      var id = pageFromHash(window.location.hash);
+      if (!id && window.location.hash) return; // not a page: leave things be
+      showPage(id || PAGES[0].id, { animate: !reducedMotion() });
+    }
+    window.addEventListener("popstate", fromAddress);
+    window.addEventListener("hashchange", fromAddress);
+
+    // 1 to 6 pick a window; n and p step to the next and the previous
+    doc.addEventListener("keydown", function (e) {
+      if (e.metaKey || e.ctrlKey || e.altKey || e.defaultPrevented) return;
+      var t = e.target;
+      if (t && /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
+      if (t && t.isContentEditable) return;
+      if (doc.querySelector("dialog[open]")) return;
+      var i = pageIndex(currentPage);
+      var to = -1;
+      if (/^[1-9]$/.test(e.key)) to = Number(e.key) - 1;
+      else if (e.key === "n") to = i + 1;
+      else if (e.key === "p") to = i - 1;
+      if (to < 0 || to >= PAGES.length || to === i) return;
+      showPage(PAGES[to].id, {
+        push: true,
+        focus: true,
+        animate: !reducedMotion(),
+      });
+    });
+
+    // A reload or a shared link opens on the page it names, at the top.
+    showPage(pageFromHash(window.location.hash) || PAGES[0].id);
+    window.addEventListener("pageshow", function (e) {
+      if (e.persisted) jump(0);
+    });
   }
 
   function renderFooter() {
@@ -3142,22 +3316,6 @@
   // In-page links scroll without writing to the URL. Clicking through the
   // nav and then reloading should leave you at the top, not wherever you
   // happened to be reading. A typed or shared #fragment still works.
-  function initNavScroll() {
-    doc.addEventListener("click", function (e) {
-      var a = e.target.closest && e.target.closest('a[href^="#"]');
-      if (!a || a.classList.contains("skip")) return;
-
-      var target = byId(a.getAttribute("href").slice(1));
-      if (!target || target.hidden) return;
-
-      e.preventDefault();
-      target.scrollIntoView({
-        behavior: reducedMotion() ? "auto" : "smooth",
-        block: "start",
-      });
-    });
-  }
-
   function jump(top) {
     var st = root.style;
     var prev = st.scrollBehavior;
@@ -3166,66 +3324,13 @@
     st.scrollBehavior = prev;
   }
 
-  function navigationType() {
-    try {
-      var n = window.performance.getEntriesByType("navigation")[0];
-      return n ? n.type : "";
-    } catch (e) {
-      return "";
-    }
-  }
-
-  // A fresh load with a #fragment scrolls before this script has built the
   // page, so by the time the section exists it has moved somewhere else.
   // Put the scroll position right once we are done. A typed or shared link to
   // a #section still lands on it, but a refresh always starts at the top, even
   // if the address bar still carries a #section from an earlier click.
-  function restoreHashTarget() {
-    var id = window.location.hash.slice(1);
-    if (id && navigationType() === "reload") {
-      history.replaceState(
-        null,
-        "",
-        window.location.pathname + window.location.search,
-      );
-      id = "";
-    }
-    if (!id) {
-      jump(0);
-      return;
-    }
-    var target = byId(id);
-    if (!target || target.hidden) return;
-    // scroll-padding-top in the stylesheet leaves a little room above the section.
-    var st = root.style;
-    var prev = st.scrollBehavior;
-    st.scrollBehavior = "auto";
-    target.scrollIntoView({ block: "start" });
-    st.scrollBehavior = prev;
-  }
-
   // Some browsers restore the old position late, after the script has run, or
   // when a page comes back from the back/forward cache. If nobody has touched
   // the page yet, put it back at the start.
-  function guardStart() {
-    var touched = false;
-    ["wheel", "touchstart", "keydown", "mousedown"].forEach(function (n) {
-      window.addEventListener(
-        n,
-        function () {
-          touched = true;
-        },
-        { passive: true, once: true },
-      );
-    });
-    window.addEventListener("load", function () {
-      if (!touched && !window.location.hash) jump(0);
-    });
-    window.addEventListener("pageshow", function (e) {
-      if (e.persisted && !window.location.hash) jump(0);
-    });
-  }
-
   // ---- Easter egg: Konami code ---------------------------------------------
 
   function initEasterEgg() {
@@ -3281,11 +3386,9 @@
   renderNav(); // after the sections, so it only lists ones that are visible
   renderFooter();
 
-  // Navigation and the starting scroll position come before anything
-  // decorative, so they work even if something below throws.
-  initNavScroll();
-  restoreHashTarget();
-  guardStart();
+  // Paging comes before anything decorative, so it works even if something
+  // below throws.
+  initPages();
 
   [
     initEasterEgg,

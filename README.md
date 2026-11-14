@@ -86,9 +86,18 @@ A gallery entry with `graph: "name"` is a generated drawing. Two exist in `GRAPH
 
 Skip link, one `<h1>` with a clean heading outline, alt text on every image, keyboard access to interactive diagrams and galleries, and all real text passing WCAG AA contrast. The ASCII artwork is hidden from assistive technology.
 
-## Navigation and reload
+## Pages and the status bar
 
-A refresh always starts at the top: `history.scrollRestoration` is `manual`, in-page links do not write a `#section` to the address bar, and `restoreHashTarget()` clears a stale hash on reload. A typed or shared link to a section still lands on it. The decorative initialisers run through `safely()`, so one of them failing is logged rather than breaking the navigation.
+The site is one HTML file shown a page at a time: about (with the masthead), projects, toolkit, background, now and contact. `PAGES` in `main.js` lists them, and a section the config leaves empty drops out.
+
+The bar pinned to the foot of the screen is the navigation, drawn like a tmux status line: a session name, one numbered window per page with a star on the current one, and a clock. On a phone the other windows collapse to their numbers. `statusBar` in `config.js` sets the session name and the text beside the clock.
+
+- Press `1` to `6` to pick a page, or `n` and `p` for next and previous.
+- Each page has its own address (`#projects` and so on), so links can be shared, a reload stays on the same page, and Back and Forward work.
+- Every page ends with previous and next links.
+- Switching moves focus to the new page's heading and updates the tab title, so screen readers announce the change. The fade between pages is off under `prefers-reduced-motion`.
+
+The decorative initialisers run through `safely()`, so one of them failing is logged without breaking the paging.
 
 ## Deploying
 
