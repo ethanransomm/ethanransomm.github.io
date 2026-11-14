@@ -90,7 +90,7 @@ Skip link, one `<h1>` with a clean heading outline, alt text on every image, key
 
 The site is one HTML file shown a page at a time: about (with the masthead), projects, toolkit, background, now and contact. `PAGES` in `main.js` lists them, and a section the config leaves empty drops out.
 
-The bar pinned to the foot of the screen is the navigation, drawn like a tmux status line: a session name, one numbered window per page with a star on the current one, and a clock. On a phone the other windows collapse to their numbers. `statusBar` in `config.js` sets the session name and the text beside the clock.
+The bar pinned to the top of the screen is the navigation, drawn like a tmux status line: a session name, one numbered window per page with a star on the current one, and a clock. On a phone the other windows collapse to their numbers. `statusBar` in `config.js` sets the session name and the text beside the clock.
 
 - Press `1` to `6` to pick a page, or `n` and `p` for next and previous.
 - Each page has its own address (`#projects` and so on), so links can be shared, a reload stays on the same page, and Back and Forward work.

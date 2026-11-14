@@ -315,7 +315,7 @@ p {
   color: var(--on-accent);
   padding: 0.6rem 1rem;
   border-radius: 2px;
-  z-index: 20;
+  z-index: 40;
 }
 .skip:focus {
   top: 1rem;
@@ -2253,7 +2253,7 @@ section.band::before {
 .edge-art {
   display: none;
   position: fixed;
-  top: 1rem;
+  top: calc(var(--tmux-h, 2rem) + 1rem);
   bottom: 0;
   z-index: 0;
   margin: 0;
@@ -2332,8 +2332,8 @@ section.band::before {
 }
 
 /* ---- Pages and the status bar -------------------------------------------- */
-/* One page shows at a time. The bar at the foot of the screen is the only
-   navigation: a session name, one numbered window per page with a star on
+/* One page shows at a time. The status bar is the only
+   navigation, pinned to the top: a session name, one numbered window per page with a star on
    the current one, and a clock, the way tmux draws its status line. */
 
 .page-off {
@@ -2345,7 +2345,7 @@ body {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  padding-bottom: calc(var(--tmux-h) + env(safe-area-inset-bottom, 0px));
+  padding-top: calc(var(--tmux-h) + env(safe-area-inset-top, 0px));
   --tmux-h: 2rem;
 }
 main {
@@ -2382,14 +2382,14 @@ main h2:focus {
   position: fixed;
   left: 0;
   right: 0;
-  bottom: 0;
+  top: 0;
   z-index: 30;
   display: flex;
   align-items: stretch;
-  height: calc(var(--tmux-h) + env(safe-area-inset-bottom, 0px));
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  height: calc(var(--tmux-h) + env(safe-area-inset-top, 0px));
+  padding-top: env(safe-area-inset-top, 0px);
   background: var(--sunken);
-  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
   font-family: var(--font-mono);
   font-size: 0.8rem;
   line-height: 1;
@@ -2458,7 +2458,7 @@ main h2:focus {
 .tw[aria-current="page"] {
   color: var(--text);
   background: var(--surface);
-  box-shadow: inset 0 2px 0 var(--accent);
+  box-shadow: inset 0 -2px 0 var(--accent);
 }
 .tw[aria-current="page"] .tw-n {
   color: var(--accent);
@@ -2499,7 +2499,7 @@ main h2:focus {
   color: var(--accent);
 }
 
-/* On a phone the bar is taller, for thumbs, and only the current window is
+/* On a phone the bar is taller, for fingers, and only the current window is
    spelled out: the rest collapse to their numbers. */
 @media (max-width: 760px) {
   body {
@@ -2536,6 +2536,6 @@ main h2:focus {
   }
   body {
     display: block;
-    padding-bottom: 0;
+    padding-top: 0;
   }
 }

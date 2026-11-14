@@ -32,6 +32,9 @@
   <body>
     <a class="skip" href="#main">Skip to content</a>
 
+    <!-- The status bar: one numbered window per page, as tmux lists them -->
+    <nav id="tmux" class="tmux" aria-label="Pages"></nav>
+
     <main id="main">
       <section id="top" class="hero">
         <div class="hero-main">
@@ -234,9 +237,6 @@
     <footer class="site-footer">
       <p id="footer-text"></p>
     </footer>
-
-    <!-- The status bar: one numbered window per page, as tmux lists them -->
-    <nav id="tmux" class="tmux" aria-label="Pages"></nav>
 
     <!-- config.js must load before main.js -->
     <script src="config.js"></script>
