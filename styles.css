@@ -186,25 +186,42 @@ body::after {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* The CRT layer. Scanlines and a vignette, sitting over everything but
-   catching no clicks. Static on purpose: nothing here pulses or flickers. */
+/* The CRT layer, in two parts. The vignette sits over everything and catches
+   no clicks. The scanlines are drawn only on the masthead, the power lines
+   and the status bar, so they never cross a screenshot or a paragraph.
+   Static on purpose: nothing here pulses or flickers. */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: 49;
   pointer-events: none;
-  background-image:
-    repeating-linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0.11) 0 1px,
-      transparent 1px 3px
-    ),
-    radial-gradient(
-      ellipse 120% 90% at 50% 50%,
-      transparent 55%,
-      rgba(0, 0, 0, 0.35) 100%
-    );
+  background-image: radial-gradient(
+    ellipse 120% 90% at 50% 50%,
+    transparent 55%,
+    rgba(0, 0, 0, 0.35) 100%
+  );
+}
+.hero::after,
+.wire-band::after,
+.tmux::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.11) 0 1px,
+    transparent 1px 3px
+  );
+}
+/* the masthead sits in the content column; its scanlines run the full window */
+.hero::after {
+  left: 50%;
+  right: auto;
+  width: 100vw;
+  margin-left: -50vw;
 }
 
 /* The CRT layer is a dark-room effect. On a near-white page it only needs
@@ -237,7 +254,8 @@ a:focus-visible {
 }
 .btn,
 .tmux a,
-.pager a {
+.pager a,
+.pi-row {
   background-image: none;
 }
 
@@ -296,8 +314,9 @@ p {
 .chip,
 .tl-when,
 .project-context,
-.skill-group h3,
 .outcome h4,
+.results-label,
+.tier h3,
 .facts dt,
 .now-grid h3,
 .interests h3 {
@@ -344,8 +363,8 @@ main > section {
   margin-bottom: 3rem;
 }
 
-/* The command is the heading now. The written title is still in the markup
-   for screen readers and for the section's accessible name, just not drawn. */
+/* The written title is the heading. The command that "opens" the section
+   sits above it as a small prompt line, hidden from screen readers. */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -359,14 +378,19 @@ main > section {
 }
 
 .sec-cmd {
+  display: flex;
+  align-items: center;
   font-family: var(--font-mono);
-  font-size: clamp(1.15rem, 2.4vw, 1.6rem);
+  font-size: 0.85rem;
   font-weight: 500;
-  letter-spacing: -0.015em;
+  letter-spacing: 0;
   line-height: 1.2;
-  color: var(--text);
-  margin: 0;
+  color: var(--muted);
+  margin: 0 0 0.75rem;
   white-space: nowrap;
+}
+.sec-line h2 {
+  margin: 0;
 }
 /* A powerline prompt, built the way the real one is: a logo segment, the
    working directory, and a chevron into the command. Drawn with CSS
@@ -376,8 +400,8 @@ main > section {
   display: inline-flex;
   align-items: stretch;
   vertical-align: baseline;
-  margin-right: 0.55rem;
-  font-size: 0.78em;
+  margin-right: 0.6rem;
+  font-size: 0.9em;
   line-height: 1;
 }
 
@@ -422,17 +446,8 @@ main > section {
   border-left: 0.58em solid var(--line);
 }
 
-/* A shell comment after the command, naming the section the command opens */
-.pl-note {
-  margin-left: 0.9rem;
-  font-size: 0.62em;
-  font-weight: 400;
-  letter-spacing: 0;
-  color: var(--muted);
-}
-
 .pl-cmd {
-  color: var(--text);
+  color: var(--muted);
 }
 
 .sec-line {
@@ -501,7 +516,11 @@ section.band::before {
 
 .hero {
   position: relative;
-  padding: 5rem 0 4rem !important;
+  padding: 3.5rem 0 2rem !important;
+}
+/* the About text should start on the first screen, under the power lines */
+#about {
+  padding-top: 3.5rem;
 }
 
 /* A printer's dot grid behind the masthead, fading out as it travels */
@@ -628,7 +647,7 @@ section.band::before {
 /* Misregistered colour channels, the way a bad signal prints them.
    Static, and small enough that it reads as print rather than as damage. */
 #hero-name {
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.1rem;
   text-shadow:
     -0.022em 0 0 rgba(255, 60, 40, 0.42),
     0.022em 0 0 rgba(40, 220, 255, 0.34);
@@ -636,9 +655,26 @@ section.band::before {
 
 .hero-tagline {
   font-size: 1.05rem;
-  color: var(--muted);
+  color: var(--text);
   max-width: 34rem;
-  margin: 1.75rem 0 0;
+  margin: 0;
+}
+
+/* Up to three figures under the tagline: the number, then what it counts */
+.hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1.75rem;
+  list-style: none;
+  max-width: 34rem; /* stays clear of the oscilloscope on the right */
+  margin: 1rem 0 0;
+  padding: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.hero-stats strong {
+  color: var(--text);
+  font-weight: 700;
 }
 
 .hero-photo img {
@@ -661,8 +697,8 @@ section.band::before {
   left: 50%;
   width: 100vw;
   margin-left: -50vw;
-  height: 18rem;
-  margin-bottom: -6rem;
+  height: 11rem;
+  margin-bottom: -4rem;
   overflow: hidden;
   pointer-events: none;
   opacity: 0.62;
@@ -700,7 +736,7 @@ section.band::before {
 .btn {
   display: inline-block;
   padding: 0.65rem 1.25rem;
-  border: 1px solid var(--border);
+  border: 1px solid color-mix(in srgb, var(--muted) 62%, var(--bg));
   border-radius: 2px;
   color: var(--text);
   font-weight: 600;
@@ -777,8 +813,8 @@ section.band::before {
 }
 
 .about-grid .prose p:first-child {
-  font-size: 1.22rem;
-  line-height: 1.5;
+  font-size: 1.08rem;
+  line-height: 1.6;
   color: var(--text);
 }
 
@@ -796,6 +832,99 @@ section.band::before {
 .project {
   display: block;
   min-width: 0;
+  scroll-margin-top: calc(var(--tmux-h, 2rem) + 1.5rem);
+}
+
+/* The listing `ls ~/projects` prints: one row per project, each a jump */
+.project-index {
+  list-style: none;
+  margin: 0 0 3.5rem;
+  padding: 0;
+  border-top: 1px solid var(--border);
+}
+.pi-row {
+  display: grid;
+  grid-template-columns: minmax(0, 15rem) minmax(0, 1fr) auto;
+  gap: 0.2rem 1.5rem;
+  align-items: baseline;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.92rem;
+}
+.pi-name {
+  color: var(--accent);
+}
+.pi-meta {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+.pi-row:hover .pi-title,
+.pi-row:focus-visible .pi-title {
+  color: var(--accent);
+}
+
+/* What it is, how it did, where the code is: all before the screenshot */
+.project-head {
+  margin-bottom: 2rem;
+}
+.project-head .lead {
+  margin-bottom: 0;
+}
+.project-head .actions {
+  margin-top: 1.5rem;
+}
+.project h3:focus {
+  outline: none;
+}
+.project-results {
+  margin-top: 1.5rem;
+  max-width: var(--measure);
+}
+.results-label {
+  margin: 0 0 0.6rem;
+  color: var(--sage);
+}
+.project-main > :first-child,
+.project-aside > :first-child {
+  margin-top: 0;
+}
+
+/* ---- Bars ---------------------------------------------------------------- */
+/* Label, bar, figure. Used for a project's results and for module marks. */
+.bars {
+  display: grid;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: var(--measure);
+}
+.bar-row {
+  display: grid;
+  grid-template-columns: minmax(0, 17.5rem) minmax(0, 1fr) 3.5rem;
+  gap: 0.2rem 1rem;
+  align-items: center;
+  font-size: 0.85rem;
+}
+.bar-label {
+  color: var(--muted);
+}
+.bar-track {
+  height: 8px;
+  background: var(--border);
+}
+.bar-fill {
+  display: block;
+  height: 100%;
+  background: var(--m, var(--sage));
+}
+.bar-row.is-top .bar-fill {
+  background: var(--accent);
+}
+.bar-value {
+  text-align: right;
+  color: var(--text);
 }
 
 .project-body {
@@ -823,17 +952,6 @@ section.band::before {
   top: 5.5rem;
   padding-left: 1.5rem;
   border-left: 1px solid var(--border);
-}
-.project-aside .actions {
-  margin-top: 0;
-  flex-direction: column;
-  align-items: stretch;
-}
-.project-aside .actions .btn {
-  text-align: center;
-}
-.project-aside .chips {
-  margin-top: 1.25rem;
 }
 .project-aside .project-note {
   margin-top: 1.25rem;
@@ -991,18 +1109,28 @@ section.band::before {
   border-radius: 2px;
   overflow: hidden;
   cursor: pointer;
-  opacity: 0.55;
-  transition:
-    opacity 0.2s ease,
-    border-color 0.2s ease;
+  color: var(--muted);
+  transition: border-color 0.2s ease;
 }
 .thumb:hover {
-  opacity: 1;
   border-color: var(--line);
+  color: var(--text);
 }
 .thumb[aria-pressed="true"] {
-  opacity: 1;
   border-color: var(--accent);
+  color: var(--accent);
+}
+/* a word under each thumbnail, so they can be told apart before opening */
+.thumb-label {
+  display: block;
+  padding: 0.3rem 0.45rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.75rem;
+  line-height: 1.3;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .thumb img {
   width: 100%;
@@ -1581,69 +1709,35 @@ section.band::before {
 }
 
 /* ---- Toolkit ------------------------------------------------------------- */
-/* A spec sheet, not a row of cards. Cells share their hairlines. */
+/* A spec sheet in two tiers: what shipped, then what was studied. Rows share
+   their hairlines; each shipped row names the project that proves it. */
 
-.lang-grid {
+.tiers {
   display: grid;
-  /* 260px lands on three columns at full width, so the nine languages
-     make a complete grid with no ragged last row. */
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 3rem;
+  margin-top: 2rem;
+}
+.tier h3 {
+  margin: 0 0 0.75rem;
+  color: var(--sage);
+}
+
+.spec {
   list-style: none;
-  padding: 0;
   margin: 0;
-  border-top: 1px solid var(--border);
-  border-left: 1px solid var(--border);
+  padding: 0;
+  border-top: 1px solid var(--line);
 }
-
-.lang {
+.spec-row {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  grid-template-areas:
-    "icon name"
-    "icon note";
-  column-gap: 0.85rem;
-  align-content: center;
-  padding: 1.15rem 1.1rem;
-  border-right: 1px solid var(--border);
+  grid-template-columns: 2.1rem 10rem minmax(0, 1fr);
+  gap: 0 1.1rem;
+  align-items: start;
+  padding: 1.1rem 0;
   border-bottom: 1px solid var(--border);
-  transition: background 0.2s ease;
-}
-.lang {
-  position: relative;
-}
-.lang::before,
-.lang::after {
-  content: "";
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  border: 0 solid var(--accent);
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  pointer-events: none;
-}
-.lang::before {
-  top: 5px;
-  left: 5px;
-  border-top-width: 1px;
-  border-left-width: 1px;
-}
-.lang::after {
-  bottom: 5px;
-  right: 5px;
-  border-bottom-width: 1px;
-  border-right-width: 1px;
-}
-.lang:hover::before,
-.lang:hover::after {
-  opacity: 1;
-}
-.lang:hover {
-  background: var(--sunken);
 }
 
 .lang-icon {
-  grid-area: icon;
   display: grid;
   place-items: center;
   width: 2.1rem;
@@ -1651,7 +1745,7 @@ section.band::before {
   color: var(--muted);
   transition: color 0.2s ease;
 }
-.lang:hover .lang-icon {
+.spec-row:hover .lang-icon {
   color: var(--accent);
 }
 .lang-icon svg {
@@ -1659,45 +1753,24 @@ section.band::before {
   height: 100%;
 }
 
-.lang-name {
-  grid-area: name;
+.spec-name {
+  padding-top: 0.25rem;
   font-weight: 650;
-  font-size: 0.98rem;
+  font-size: 1rem;
   letter-spacing: -0.01em;
 }
-
-.lang-note {
-  grid-area: note;
-  font-size: 0.73rem;
-  line-height: 1.35;
-  color: var(--muted);
-  margin-top: 0.1rem;
-}
-
-.skill-groups {
-  display: grid;
-  gap: 0;
-  margin-top: 3.5rem;
-}
-
-.skill-group {
-  display: grid;
-  grid-template-columns: 11rem minmax(0, 1fr);
-  gap: 1.5rem;
-  padding: 0.85rem 0;
-}
-.skill-group h3 {
+.spec-proof {
   margin: 0;
+  padding-top: 0.3rem;
+  max-width: var(--measure);
+  font-size: 0.92rem;
   color: var(--muted);
-  font-weight: 500;
-  padding-top: 0.35rem;
 }
-.skill-group .chips {
-  margin-top: 0;
+.tier-shipped .spec-proof {
+  color: var(--text);
 }
-.skill-group .chip:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+.spec-body .chips {
+  margin-top: 0.7rem;
 }
 
 /* ---- Background timeline ------------------------------------------------- */
@@ -1786,8 +1859,47 @@ section.band::before {
   font-size: 0.95rem;
   max-width: var(--measure);
 }
-.tl-body .chips {
+.tl-body .chips,
+.tl-body .bars {
   margin-top: 0.9rem;
+}
+
+/* A minor entry is one line: what, where and when, with a smaller dot */
+.tl-minor {
+  padding: 0.9rem 0;
+}
+.tl-minor .tl-when {
+  padding-top: 0.15rem;
+}
+.tl-minor .tl-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15rem 0.9rem;
+}
+.tl-minor h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+}
+.tl-minor .tl-place {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 400;
+}
+.tl-minor::after {
+  top: 1.25rem;
+  width: 0.4rem;
+  height: 0.4rem;
+  margin-left: 0.1rem;
+  background: var(--line);
+  box-shadow: 0 0 0 4px var(--bg);
+}
+.tl-minor .tl-body::before {
+  top: 1.45rem;
+}
+.tl-minor:last-child::before {
+  height: 1.45rem;
 }
 
 /* ---- Right now ----------------------------------------------------------- */
@@ -1952,7 +2064,10 @@ section.band::before {
     padding: 3.5rem 0;
   }
   .hero {
-    padding: 3rem 0 3.5rem !important;
+    padding: 2.5rem 0 1.5rem !important;
+  }
+  #about {
+    padding-top: 3rem;
   }
   .sec-head {
     margin-bottom: 2rem;
@@ -1980,19 +2095,25 @@ section.band::before {
     padding-top: 1.5rem;
     border-top: 1px solid var(--border);
   }
-  .project-aside .actions {
-    flex-direction: row;
+  .pi-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .bar-row {
+    grid-template-columns: minmax(0, 1fr) 3.5rem;
+  }
+  .bar-label {
+    grid-column: 1 / -1;
   }
   .project-list {
     gap: 4rem;
   }
 
-  .lang-grid {
-    grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+  .spec-row {
+    grid-template-columns: 2.1rem minmax(0, 1fr);
   }
-  .skill-group {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
+  .spec-body {
+    grid-column: 1 / -1;
+    margin-top: 0.4rem;
   }
   .tl-item {
     grid-template-columns: 1fr;
@@ -2470,11 +2591,40 @@ main h2:focus {
 
 .tmux-right {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   flex: none;
+  color: var(--muted);
+}
+/* the CV and the profiles, one click away from every page */
+.tmux-links {
+  display: flex;
+  align-items: stretch;
+}
+.tmux-link {
+  display: flex;
+  align-items: center;
+  padding: 0 0.6rem;
+  color: var(--sage);
+  text-decoration: none;
+}
+.tmux-link:hover {
+  color: var(--text);
+  background: var(--surface);
+}
+.tmux-link:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: -2px;
+}
+.tmux-meta {
+  display: flex;
+  align-items: center;
   gap: 0.9rem;
   padding: 0 0.9rem;
-  color: var(--muted);
+}
+@media (max-width: 980px) {
+  .tmux-meta {
+    display: none;
+  }
 }
 .tmux-clock {
   color: var(--sage);
@@ -2499,8 +2649,8 @@ main h2:focus {
   color: var(--accent);
 }
 
-/* On a phone the bar is taller, for fingers, and only the current window is
-   spelled out: the rest collapse to their numbers. */
+/* On a phone the bar is taller, for fingers. Every window keeps its word and
+   drops its number, and the strip scrolls sideways if it ever runs out of room. */
 @media (max-width: 760px) {
   body {
     --tmux-h: 2.75rem;
@@ -2508,15 +2658,21 @@ main h2:focus {
   .tmux-right {
     display: none;
   }
+  .tmux {
+    font-size: 0.76rem;
+  }
   .tmux-windows {
     justify-content: space-between;
+    overflow-x: auto;
+    scrollbar-width: none;
   }
   .tw {
-    min-width: 2.75rem;
-    padding: 0 0.35rem;
+    min-width: 0;
+    padding: 0 0.5rem;
   }
-  .tw:not([aria-current="page"]) .tw-l,
-  .tw:not([aria-current="page"]) .tw-f {
+  .tw-n,
+  .tw-c,
+  .tw-f {
     display: none;
   }
 }

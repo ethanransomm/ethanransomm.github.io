@@ -52,7 +52,7 @@ Each entry in `projects` is a short case study:
 | `note` | A caveat in an accented callout. |
 | `tech`, `links` | Technology pills and buttons. A link with an empty `url` is hidden. |
 
-Other fields: `timeline` is the background section, `interests` is the "Outside of Programming" chips beside the About text, and `contact.links` holds GitHub, LinkedIn and the CV. Search `config.js` for `TODO` to find what is still unfilled (currently the dashboard's live demo link).
+Other fields: `tagline` and `heroStats` are the sentence and the three figures under your name. A project's `results` draws its headline numbers as bars under the summary. `toolkit` has two tiers, `shipped` (each row names the project that proves it) and `studied` (coursework). In `timeline`, `marks` draws module marks as bars and `minor: true` collapses an entry to one line. `timeline` is the background section, `interests` is the "Outside of Programming" chips beside the About text, and `contact.links` holds GitHub, LinkedIn and the CV. Search `config.js` for `TODO` to find what is still unfilled (currently the dashboard's live demo link).
 
 ## Look and feel
 
@@ -67,7 +67,7 @@ Other fields: `timeline` is the background section, `interests` is the "Outside 
 - A CRT texture: scanlines and vignette, film grain, and a faint chromatic aberration on the name.
 - `initHeroArt()` draws a field of characters behind the name from interfering sine waves. Quiet cells are dots and the crests become hex digits.
 - `initWires()` draws a band of utility poles and cable between the hero and the first section.
-- `initEdgeArt()` draws a level meter down each margin on screens 1440px or wider. It drifts slowly on its own clock and never reacts to scrolling. It is clipped to start below the power lines. Set `edgeArt: false` in `config.js` to remove it, or lower `opacity` on `.edge-art` to quiet it.
+- `initEdgeArt()` draws a level meter down each margin on screens 1440px or wider. It drifts slowly on its own clock and never reacts to scrolling. It is clipped to start below the power lines. It is off by default; set `edgeArt: true` in `config.js` to bring it back, or lower `opacity` on `.edge-art` to quiet it.
 - The easter egg is the Konami code.
 
 ## Diagrams and drawn slides
@@ -88,9 +88,9 @@ Skip link, one `<h1>` with a clean heading outline, alt text on every image, key
 
 ## Pages and the status bar
 
-The site is one HTML file shown a page at a time: about (with the masthead), projects, toolkit, background, now and contact. `PAGES` in `main.js` lists them, and a section the config leaves empty drops out.
+The site is one HTML file shown a page at a time: about (with the masthead), projects, toolkit, background and contact (which also carries the "right now" section). `PAGES` in `main.js` lists them, and a section the config leaves empty drops out.
 
-The bar pinned to the top of the screen is the navigation, drawn like a tmux status line: a session name, one numbered window per page with a star on the current one, and a clock. On a phone the other windows collapse to their numbers. `statusBar` in `config.js` sets the session name and the text beside the clock.
+The bar pinned to the top of the screen is the navigation, drawn like a tmux status line: a session name, one numbered window per page with a star on the current one, the contact links (CV, GitHub, LinkedIn) and a clock. On a phone every window keeps its word and drops its number. `statusBar` in `config.js` sets the session name, the text beside the clock, and whether the links show (`links: false` hides them).
 
 - Press `1` to `6` to pick a page, or `n` and `p` for next and previous.
 - Each page has its own address (`#projects` and so on), so links can be shared, a reload stays on the same page, and Back and Forward work.

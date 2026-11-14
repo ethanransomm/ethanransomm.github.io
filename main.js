@@ -79,6 +79,38 @@
     return el("li", { class: "chip", text: label });
   }
 
+  // Rows of label, bar and figure, all drawn against one scale. The figure
+  // is printed beside every bar, so nothing is carried by length alone.
+  // A row's `tone` picks a model colour; without one the highest row is lit.
+  function bars(rows, max, format, label) {
+    var top = Math.max.apply(
+      null,
+      rows.map(function (r) {
+        return r.value;
+      }),
+    );
+    return el(
+      "ul",
+      { class: "bars", "aria-label": label || null },
+      rows.map(function (r) {
+        var cls = "bar-row";
+        if (r.tone) cls += " " + r.tone;
+        else if (r.value === top) cls += " is-top";
+        var width = Math.max(0, Math.min(100, (r.value / max) * 100));
+        return el("li", { class: cls }, [
+          el("span", { class: "bar-label", text: r.label }),
+          el("span", { class: "bar-track", "aria-hidden": "true" }, [
+            el("span", {
+              class: "bar-fill",
+              style: "width:" + width.toFixed(1) + "%",
+            }),
+          ]),
+          el("span", { class: "bar-value", text: format(r.value) }),
+        ]);
+      }),
+    );
+  }
+
   // 1 -> "01", for the project index
   function pad(n) {
     return n < 10 ? "0" + n : String(n);
@@ -1388,7 +1420,7 @@
       W +
       " " +
       H +
-      '" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">' +
+      '" preserveAspectRatio="xMidYMin slice" aria-hidden="true" focusable="false">' +
       far +
       near +
       "</svg>";
@@ -1808,10 +1840,33 @@
     var nameEl = byId("hero-name");
     if (nameEl) nameEl.setAttribute("aria-label", S.name);
     setText("hero-tagline", S.tagline);
+    var tagline = byId("hero-tagline");
+    if (tagline) tagline.hidden = !S.tagline;
+
+    var stats = byId("hero-stats");
+    if (stats) {
+      if (has(S.heroStats)) {
+        mount(
+          "hero-stats",
+          S.heroStats.slice(0, 3).map(function (f) {
+            return el("li", {}, [
+              el("strong", { text: f.value }),
+              doc.createTextNode(" " + f.label),
+            ]);
+          }),
+        );
+      } else {
+        stats.hidden = true;
+      }
+    }
 
     var actions = [];
     if (has(S.projects))
       actions.push(link("See my work", "#projects", "btn btn-primary"));
+    // any contact link flagged `hero: true`, the CV by default
+    ((S.contact && S.contact.links) || []).forEach(function (l) {
+      if (l && l.url && l.hero) actions.push(link(l.label, l.url, "btn"));
+    });
     if (S.contact && S.contact.email) {
       actions.push(link("Say hello", "mailto:" + S.contact.email, "btn"));
     }
@@ -2688,6 +2743,7 @@
         src: p.image,
         alt: p.imageAlt || "",
         caption: p.imageCaption || "Landing page",
+        label: p.imageLabel,
       },
     ].concat(
       (p.gallery || []).filter(function (g) {
@@ -2780,7 +2836,15 @@
             "aria-pressed": String(i === 0),
             "aria-label": "Show: " + (g.caption || "slide " + (i + 1)),
           },
-          [face],
+          [
+            face,
+            // a word under each thumbnail, so they can be told apart unopened
+            el("span", {
+              class: "thumb-label",
+              "aria-hidden": "true",
+              text: g.label || String(g.caption || "").split(/[:,]/)[0],
+            }),
+          ],
         );
         b.addEventListener("click", function () {
           if (g === current) return;
@@ -2834,7 +2898,6 @@
     var after = p.image && p.diagram ? renderDiagram(p.diagram) : null;
 
     var aside = [
-      links.length ? el("div", { class: "actions" }, links) : null,
       has(p.tech)
         ? el(
             "ul",
@@ -2845,54 +2908,127 @@
       p.note ? el("p", { class: "project-note", text: p.note }) : null,
     ].filter(Boolean);
 
-    return el("article", { class: "project reveal" }, [
-      hero ? el("div", { class: "project-media" }, [hero]) : null,
-      el("div", { class: "project-body" }, [
-        el("div", { class: "project-main" }, [
+    var r = p.results;
+    var results =
+      r && has(r.rows)
+        ? el("div", { class: "project-results" }, [
+            r.label ? el("p", { class: "results-label", text: r.label }) : null,
+            bars(
+              r.rows,
+              r.max || 1,
+              function (v) {
+                return String(v);
+              },
+              r.label,
+            ),
+          ])
+        : null;
+
+    // What it is, how it did and where the code lives come first. The
+    // screenshots follow, then the long write-up.
+    return el(
+      "article",
+      { class: "project reveal", id: "project-" + projectSlug(p) },
+      [
+        el("header", { class: "project-head" }, [
           p.context
             ? el("p", { class: "project-context", text: p.context })
             : null,
-          el("h3", { text: p.title }),
+          el("h3", { text: p.title, tabindex: "-1" }),
           p.summary ? el("p", { class: "lead", text: p.summary }) : null,
-          has(p.highlights)
-            ? el(
-                "ul",
-                { class: "highlights" },
-                p.highlights.map(function (h) {
-                  return el("li", { text: h });
-                }),
-              )
-            : null,
-          p.feature
-            ? el("div", { class: "feature" }, [
-                el("h4", { text: p.feature.title }),
-                p.feature.text ? el("p", { text: p.feature.text }) : null,
-                has(p.feature.points)
-                  ? el(
-                      "ul",
-                      { class: "feature-list" },
-                      p.feature.points.map(function (t) {
-                        return el("li", { text: t });
-                      }),
-                    )
-                  : null,
-              ])
-            : null,
-          p.outcome
-            ? el("div", { class: "outcome" }, [
-                el("h4", { text: "Result" }),
-                el("p", { text: p.outcome }),
-              ])
-            : null,
+          results,
+          links.length ? el("div", { class: "actions" }, links) : null,
         ]),
-        aside.length ? el("aside", { class: "project-aside" }, aside) : null,
-      ]),
-      after ? el("div", { class: "project-diagram" }, [after]) : null,
-    ]);
+        hero ? el("div", { class: "project-media" }, [hero]) : null,
+        el("div", { class: "project-body" }, [
+          el("div", { class: "project-main" }, [
+            has(p.highlights)
+              ? el(
+                  "ul",
+                  { class: "highlights" },
+                  p.highlights.map(function (h) {
+                    return el("li", { text: h });
+                  }),
+                )
+              : null,
+            p.feature
+              ? el("div", { class: "feature" }, [
+                  el("h4", { text: p.feature.title }),
+                  p.feature.text ? el("p", { text: p.feature.text }) : null,
+                  has(p.feature.points)
+                    ? el(
+                        "ul",
+                        { class: "feature-list" },
+                        p.feature.points.map(function (t) {
+                          return el("li", { text: t });
+                        }),
+                      )
+                    : null,
+                ])
+              : null,
+            p.outcome
+              ? el("div", { class: "outcome" }, [
+                  el("h4", { text: "Result" }),
+                  el("p", { text: p.outcome }),
+                ])
+              : null,
+          ]),
+          aside.length ? el("aside", { class: "project-aside" }, aside) : null,
+        ]),
+        after ? el("div", { class: "project-diagram" }, [after]) : null,
+      ],
+    );
+  }
+
+  // The repo name where there is one, as `ls` would print the directory.
+  function projectSlug(p) {
+    var label = windowLabel(p);
+    var name = label === p.title ? p.title : label.split("/").pop();
+    return String(name)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+  }
+
+  // `ls ~/projects` prints its listing: one row per project, each a jump to
+  // that project further down the page. The jump scrolls and moves focus but
+  // leaves the address alone, since the address names pages, not projects.
+  function renderProjectIndex() {
+    var host = byId("project-index");
+    if (!host) return;
+    if (S.projects.length < 2) {
+      host.hidden = true;
+      return;
+    }
+    mount(
+      "project-index",
+      S.projects.map(function (p) {
+        var slug = projectSlug(p);
+        var a = el("a", { href: "#project-" + slug, class: "pi-row" }, [
+          el("span", { class: "pi-name", text: slug + "/" }),
+          el("span", { class: "pi-title", text: p.title }),
+          p.context ? el("span", { class: "pi-meta", text: p.context }) : null,
+        ]);
+        a.addEventListener("click", function (e) {
+          if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+          var target = byId("project-" + slug);
+          if (!target) return;
+          e.preventDefault();
+          target.scrollIntoView({
+            behavior: reducedMotion() ? "auto" : "smooth",
+            block: "start",
+          });
+          var heading = target.querySelector("h3");
+          if (heading) heading.focus({ preventScroll: true });
+        });
+        return el("li", {}, [a]);
+      }),
+    );
   }
 
   function renderProjects() {
     if (!has(S.projects)) return hideSection("projects");
+    renderProjectIndex();
     mount("project-list", S.projects.map(projectCard));
   }
 
@@ -2947,32 +3083,50 @@
     );
   }
 
+  // Two tiers. A shipped row names the project that proves it and links to
+  // the projects page; a studied row says which coursework it came from.
   function renderToolkit() {
     var t = S.toolkit || {};
-    if (!has(t.languages) && !has(t.groups)) return hideSection("toolkit");
+    if (!has(t.shipped) && !has(t.studied)) return hideSection("toolkit");
 
     setText("toolkit-blurb", t.blurb);
+    var blurb = byId("toolkit-blurb");
+    if (blurb) blurb.hidden = !t.blurb;
 
-    mount(
-      "languages",
-      (t.languages || []).map(function (l, i) {
-        return el("li", { class: "lang reveal", style: "--i:" + i }, [
-          langIcon(l.icon),
-          el("span", { class: "lang-name", text: l.name }),
-          l.note ? el("span", { class: "lang-note", text: l.note }) : null,
-        ]);
-      }),
-    );
+    function row(r, i) {
+      var proof = [];
+      if (r.project) proof.push(link(r.project, "#projects"));
+      if (r.note)
+        proof.push(doc.createTextNode((r.project ? ", " : "") + r.note));
+      return el("li", { class: "spec-row reveal", style: "--i:" + i }, [
+        langIcon(r.icon) ||
+          el("span", { class: "lang-icon", "aria-hidden": "true" }),
+        el("span", { class: "spec-name", text: r.name }),
+        el("div", { class: "spec-body" }, [
+          proof.length ? el("p", { class: "spec-proof" }, proof) : null,
+          has(r.with)
+            ? el(
+                "ul",
+                { class: "chips", "aria-label": "Used with" },
+                r.with.map(chip),
+              )
+            : null,
+        ]),
+      ]);
+    }
 
-    mount(
-      "skill-groups",
-      (t.groups || []).map(function (g) {
-        return el("div", { class: "skill-group reveal" }, [
-          el("h3", { text: g.title }),
-          el("ul", { class: "chips" }, (g.items || []).map(chip)),
-        ]);
-      }),
-    );
+    function tier(title, rows, cls) {
+      if (!has(rows)) return null;
+      return el("div", { class: "tier " + cls }, [
+        el("h3", { text: title }),
+        el("ul", { class: "spec" }, rows.map(row)),
+      ]);
+    }
+
+    mount("toolkit-tiers", [
+      tier(t.shippedTitle || "Built and shipped with", t.shipped, "tier-shipped"),
+      tier(t.studiedTitle || "Studied in coursework", t.studied, "tier-studied"),
+    ]);
   }
 
   // ---- Background Timeline -------------------------------------------------
@@ -2983,12 +3137,32 @@
     mount(
       "timeline",
       S.timeline.map(function (t) {
+        // a minor entry is one line: what, where and when
+        if (t.minor) {
+          return el("li", { class: "tl-item tl-minor reveal" }, [
+            el("p", { class: "tl-when", text: t.when }),
+            el("div", { class: "tl-body" }, [
+              el("h3", { text: t.title }),
+              t.place ? el("p", { class: "tl-place", text: t.place }) : null,
+            ]),
+          ]);
+        }
         return el("li", { class: "tl-item reveal" }, [
           el("p", { class: "tl-when", text: t.when }),
           el("div", { class: "tl-body" }, [
             el("h3", { text: t.title }),
             t.place ? el("p", { class: "tl-place", text: t.place }) : null,
             t.detail ? el("p", { class: "tl-detail", text: t.detail }) : null,
+            has(t.marks)
+              ? bars(
+                  t.marks,
+                  100,
+                  function (v) {
+                    return v + "%";
+                  },
+                  "Highest marks",
+                )
+              : null,
             has(t.tags) ? el("ul", { class: "chips" }, t.tags.map(chip)) : null,
           ]),
         ]);
@@ -3122,8 +3296,8 @@
     { id: "projects", label: "projects", title: "Projects" },
     { id: "toolkit", label: "toolkit", title: "Toolkit" },
     { id: "background", label: "background", title: "Background" },
-    { id: "now", label: "now", title: "Right now" },
-    { id: "contact", label: "contact", title: "Contact" },
+    // the closing page: how to reach me, then what I am working on now
+    { id: "contact", label: "contact", title: "Contact", also: ["now"] },
   ];
   var currentPage = "";
   var baseTitle = doc.title;
@@ -3137,14 +3311,18 @@
   // (the skip link's "#main", a typo) names none.
   function pageFromHash(hash) {
     var id = (hash || "").replace(/^#/, "");
-    if (id === "top") id = PAGES[0].id;
+    // a part of a page ("#top", "#now") names the page that carries it
+    PAGES.forEach(function (p) {
+      if ((p.also || []).indexOf(id) !== -1) id = p.id;
+    });
     return pageIndex(id) === -1 ? "" : id;
   }
 
   function windowLink(p, n) {
     return el("a", { href: "#" + p.id, class: "tw", "data-page": p.id }, [
       el("span", { class: "tw-n", text: String(n) }),
-      el("span", { class: "tw-l", text: ":" + p.label }),
+      el("span", { class: "tw-c", text: ":" }),
+      el("span", { class: "tw-l", text: p.label }),
       el("span", { class: "tw-f", "aria-hidden": "true", text: "*" }),
     ]);
   }
@@ -3171,6 +3349,19 @@
     tick();
     window.setInterval(tick, 15000);
 
+    // The CV and the profiles ride the bar, so they are one click away from
+    // every page rather than only from the last one.
+    var barLinks =
+      bar.links === false
+        ? []
+        : ((S.contact && S.contact.links) || [])
+            .filter(function (l) {
+              return l && l.url;
+            })
+            .map(function (l) {
+              return link(String(l.label).toLowerCase(), l.url, "tmux-link");
+            });
+
     mount("tmux", [
       el("span", { class: "tmux-session", "aria-hidden": "true" }, [
         el("span", { class: "tmux-seg", text: "[" + session + "]" }),
@@ -3183,9 +3374,14 @@
           return el("li", {}, [windowLink(p, i + 1)]);
         }),
       ),
-      el("span", { class: "tmux-right", "aria-hidden": "true" }, [
-        bar.right === "" ? null : el("span", { text: bar.right || "bristol" }),
-        clock,
+      el("span", { class: "tmux-right" }, [
+        barLinks.length ? el("span", { class: "tmux-links" }, barLinks) : null,
+        el("span", { class: "tmux-meta", "aria-hidden": "true" }, [
+          bar.right === ""
+            ? null
+            : el("span", { text: bar.right || "bristol" }),
+          clock,
+        ]),
       ]),
     ]);
   }
@@ -3279,7 +3475,7 @@
     window.addEventListener("popstate", fromAddress);
     window.addEventListener("hashchange", fromAddress);
 
-    // 1 to 6 pick a window; n and p step to the next and the previous
+    // a digit picks a window; n and p step to the next and the previous
     doc.addEventListener("keydown", function (e) {
       if (e.metaKey || e.ctrlKey || e.altKey || e.defaultPrevented) return;
       var t = e.target;

@@ -3,6 +3,16 @@ window.SITE = {
   name: "Ethan Ransom",
   role: "BSc Computer Science, First Class Honours, Bristol",
 
+  // One sentence under the name: what you do, not who you are.
+  tagline:
+    "Machine learning & AI, data heavy interfaces and web applications, with a focus on medical imaging and healthcare during my dissertation.",
+  // Up to three figures under the tagline. Leave empty to hide the row.
+  heroStats: [
+    { value: "1,500", label: "MRI cases modelled" },
+    { value: "3", label: "architectures compared" },
+    { value: "96%", label: "top module mark" },
+  ],
+
   // Browser tab title and search description.
   title: "Ethan Ransom | Computer Science Graduate",
   description:
@@ -39,6 +49,7 @@ window.SITE = {
       imageAlt:
         "The dashboard's performance tab for one patient: AUROC 78.11% and average precision 46.17% above a four-quadrant confusion matrix and a filled ROC curve with AUC 0.781.",
       imageCaption: "Performance analysis: confusion matrix and ROC curve",
+      imageLabel: "Performance",
       imageRatio: "2.2 / 1",
       imageFit: "contain",
       gallery: [
@@ -62,6 +73,17 @@ window.SITE = {
       ],
       diagram: "cspca",
       context: "Final year dissertation, graded First Class",
+      // The headline numbers, drawn as bars under the summary. `tone` is one
+      // of the model colours the architecture diagram uses.
+      results: {
+        label: "Average precision on PI-CAI, higher is better",
+        max: 0.5,
+        rows: [
+          { label: "nnU-Net ensemble", value: 0.462, tone: "d-ensemble" },
+          { label: "SwinUNETR", value: 0.309, tone: "d-swin" },
+          { label: "U-Net++", value: 0.266, tone: "d-unetpp" },
+        ],
+      },
       highlights: [
         "Adapted nnU-Net's preprocessing and data pipeline so SwinUNETR and U-Net++ could be trained from scratch on identical inputs, matching its per-channel z-score normalisation for a like-for-like comparison.",
         "Handled 1,500 patients' 3D bi-parametric MRI volumes with Nibabel and NumPy across T2, ADC and DWI.",
@@ -118,6 +140,7 @@ window.SITE = {
           src: "assets/music-musings-album.webp",
           alt: "An album page for 'loveless' by my bloody valentine, with cover art, release date, genre and a full track listing with durations.",
           caption: "Album page with Spotify track listing",
+          label: "Album page",
         },
         {
           src: "assets/music-musings-review.webp",
@@ -128,6 +151,7 @@ window.SITE = {
           src: "assets/music-musings-artists.webp",
           alt: "The Artists page, a grid of circular artist portraits each with an album count.",
           caption: "Artist directory seeded from Spotify",
+          label: "Artist directory",
         },
         {
           graph: "mm-erd",
@@ -163,106 +187,73 @@ window.SITE = {
   ],
 
   // ---- Toolkit -------------------------------------------------------------
+  // Two tiers. `shipped` is what a project on this site was built with, and
+  // each row names that project. `studied` is coursework, said as coursework.
   toolkit: {
-    blurb: "Technologies I am proficient in.",
-    languages: [
+    blurb: "What I have built with, and what I have studied.",
+    shippedTitle: "Built and shipped with",
+    shipped: [
       {
         name: "Python",
         icon: "python",
-        note: "Programming Fundamentals, Probabilities, Dissertation Pipeline, Streamlit, NumPy",
+        project: "Prostate Cancer Detection Dashboard",
+        note: "1,500 MRI cases",
+        with: [
+          "Streamlit",
+          "NumPy",
+          "Nibabel",
+          "MONAI",
+          "nnU-Net",
+          "SwinUNETR",
+          "U-Net++",
+          "Plotly",
+          "PyTest",
+        ],
       },
       {
-        name: "SQL",
-        icon: "sql",
-        note: "Database Systems, Eloquent schemas, Linear & Relational Algebra",
-      },
-      {
-        name: "PHP",
+        name: "PHP + SQL",
         icon: "php",
-        note: "Fundamental framework for Database Systems, Laravel backend for Music Musings",
+        project: "Music Musings",
+        note: "graded 96%",
+        with: [
+          "Laravel",
+          "Livewire",
+          "Eloquent ORM",
+          "MySQL",
+          "Blade templates",
+          "Tailwind CSS",
+          "Spotify Web API",
+        ],
+      },
+      {
+        name: "Tooling",
+        icon: "",
+        project: "",
+        note: "Both projects",
+        with: ["Git", "Docker", "Unit testing"],
+      },
+    ],
+    studiedTitle: "Studied in coursework",
+    studied: [
+      {
+        name: "Machine learning",
+        icon: "",
+        note: "Big Data and Machine Learning, 88%: regression, random forests, PCA, CNNs, Vision Transformers, image segmentation, Spark",
       },
       {
         name: "Java",
         icon: "java",
-        note: "Programming Fundamentals, Spring Boot, Software Engineering Coursework",
+        note: "Programming fundamentals, Spring Boot, RESTful web services, software engineering coursework",
       },
       {
-        name: "C++",
+        name: "C / C++",
         icon: "cpp",
-        note: "Advanced Object Oriented Programming",
-      },
-      { name: "C", icon: "c", note: "Advanced Object Oriented Programming" },
-      {
-        name: "HTML",
-        icon: "html",
-        note: "Basic web markup, Laravel Blade templates, Streamlit components",
-      },
-      {
-        name: "CSS",
-        icon: "css",
-        note: "Tailwind in Laravel, Basic styling of Web Components",
+        note: "Advanced object-oriented programming",
       },
       {
         name: "Ada",
         icon: "ada",
-        note: "Critical Systems, Formal Correctness Theory, SPARK Ada, Hoare Logic",
-      },
-    ],
-    groups: [
-      {
-        title: "Machine learning",
-        items: [
-          "Deep learning",
-          "CNNs",
-          "PCA & dimensionality reduction",
-          "Linear Regression",
-          "Logistic Regression",
-          "Random Forests",
-          "Vision Transformers",
-          "Image segmentation",
-          "nnU-Net",
-          "SwinUNETR",
-          "U-Net++",
-          "MONAI",
-          "Model benchmarking",
-        ],
-      },
-      {
-        title: "Medical imaging",
-        items: [
-          "Bi-parametric MRI",
-          "DICOM",
-          "NIfTI",
-          "Nibabel",
-          "Image analysis",
-          "Segmentation of Medical Data",
-        ],
-      },
-      {
-        title: "Data and visualisation",
-        items: [
-          "NumPy",
-          "Streamlit",
-          "Plotly",
-          "Spark",
-          "Data Preprocessing",
-          "Clinical Data Analytics",
-        ],
-      },
-      {
-        title: "Web and engineering",
-        items: [
-          "Laravel",
-          "Livewire",
-          "Tailwind CSS",
-          "Spring Boot",
-          "RESTful web services",
-          "REST APIs",
-          "Git",
-          "Docker",
-          "Unit testing",
-          "System design",
-        ],
+        note: "Critical Systems, 81%: SPARK Ada, Hoare logic, formal correctness",
       },
     ],
   },
@@ -273,12 +264,22 @@ window.SITE = {
       when: "Sep 2022 to Jun 2026",
       title: "BSc Computer Science, First Class Honours",
       place: "Swansea University",
-      detail:
-        "72.83% average. Highest marks in Web Application Development (96%), Big Data and Machine Learning (88%), Critical Systems (81%), Visual Computing (73%) and Intelligent Robotics (73%). Dissertation modules: Specification and Planning Document 75%, PowerPoint Presentation 77%, Dissertation 75%, Project Fair Poster Presentation 82%.",
-      tags: ["Dissertation: 75%", "Project fair: 82%"],
+      detail: "72.83% average.",
+      // The strongest marks, drawn as bars out of 100, highest first.
+      marks: [
+        { label: "Web Application Development", value: 96 },
+        { label: "Big Data and Machine Learning", value: 88 },
+        { label: "Project fair poster presentation", value: 82 },
+        { label: "Critical Systems", value: 81 },
+        { label: "Dissertation", value: 75 },
+      ],
+      tags: [],
     },
     {
       when: "Jun to Oct 2024",
+      // `minor: true` collapses an entry to one line: title, place and dates.
+      // Its `detail` stays here but is not shown. Remove the flag to expand it.
+      minor: true,
       title: "Waiter",
       place: "Tiffin At The Beach, Clevedon",
       detail:
@@ -294,6 +295,7 @@ window.SITE = {
     },
     {
       when: "Sep 2015 to Jun 2020",
+      minor: true,
       title: "GCSEs",
       place: "Gordano School, Portishead",
       detail:
@@ -339,25 +341,28 @@ window.SITE = {
       "I'm currently searching & applying for graduate software, data analytics and ML engineering roles.",
     email: "ethanransom271@gmail.com",
     emailLabel: "Get in touch",
+    // `hero: true` also puts the link in the button row under your name.
     links: [
+      { label: "CV", url: "cv.pdf", hero: true },
       { label: "GitHub", url: "https://github.com/ethanransomm" },
       {
         label: "LinkedIn",
         url: "https://www.linkedin.com/in/ethan-ransom-58455a257/",
       },
-      { label: "CV", url: "cv.pdf" },
     ],
   },
 
   // ---- Status bar -----------------------------------------------------------
-  // The tmux-style bar at the foot of the screen that switches pages.
+  // The tmux-style bar at the top of the screen that switches pages.
   // `session` is the name in brackets on the left ("" uses your first name);
-  // `right` is the text beside the clock ("" hides it).
-  statusBar: { session: "", right: "bristol" },
+  // `right` is the text beside the clock ("" hides it); `links: true` puts
+  // the contact links (CV, GitHub, LinkedIn) in the bar on every page.
+  statusBar: { session: "", right: "bristol", links: true },
 
   // ---- Side rails ----------------------------------------------------------
   // 'edgeArt' is the level metre on the left and right is the page.
-  edgeArt: true,
+  // Off, so nothing moves beside the reading text. Set to true to bring it back.
+  edgeArt: false,
 
   // ---- Small touches -------------------------------------------------------
   easterEgg: true, // try the Konami code on the page
