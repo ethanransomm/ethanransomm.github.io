@@ -45,19 +45,25 @@ window.SITE = {
       title: "Prostate Cancer Detection Dashboard",
       summary:
         "An interactive dashboard for comparing three deep-learning architectures (nnU-Net, SwinUNETR and U-Net++) on clinically significant prostate cancer detection, voxel by voxel, against expert ground truth on the PI-CAI dataset.",
-      image: "assets/prostate-performance.webp",
+      // The slice viewer leads: it is a picture of the scans, so it still reads
+      // at the size a phone shows it. The performance tab is mostly small text.
+      image: "assets/prostate-slice-viewer.webp",
       imageAlt:
-        "The dashboard's performance tab for one patient: AUROC 78.11% and average precision 46.17% above a four-quadrant confusion matrix and a filled ROC curve with AUC 0.781.",
-      imageCaption: "Performance analysis: confusion matrix and ROC curve",
-      imageLabel: "Performance",
+        "The slice viewer showing four side-by-side MRI panels (T2 with heatmap, ADC, DWI and a lesion zoom), each with the model's red predicted boundary and the green ground-truth outline, above a slice slider.",
+      imageCaption:
+        "Slice viewer: T2, ADC and DWI with prediction and ground truth",
+      imageLabel: "Slice viewer",
       imageRatio: "2.2 / 1",
       imageFit: "contain",
       gallery: [
         {
-          src: "assets/prostate-slice-viewer.webp",
-          alt: "The slice viewer showing four side-by-side MRI panels (T2 with heatmap, ADC, DWI and a lesion zoom), each with the model's red predicted boundary and the green ground-truth outline, above a slice slider.",
+          src: "assets/prostate-performance.webp",
+          alt: "The dashboard's performance tab for one patient: AUROC 78.11% and average precision 46.17% above a four-quadrant confusion matrix and a filled ROC curve with AUC 0.781.",
+          // Says what the matrix counts, so its small numbers are not read as
+          // the model's overall result.
           caption:
-            "Slice viewer: T2, ADC and DWI with prediction and ground truth",
+            "Performance for one patient: voxel counts at a 0.5 threshold, beside the global ROC curve",
+          label: "Performance",
         },
         {
           src: "assets/prostate-diagnostics.webp",
