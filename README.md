@@ -101,4 +101,4 @@ The decorative initialisers run through `safely()`, so one of them failing is lo
 
 ## Deploying
 
-Hosted on GitHub Pages from the `main` branch root of the `ethanransomm.github.io` repo. Any static host works: there is no build command, and the publish directory is `/`. Before sharing links widely, add an `og:image` tag in `index.html` (there is a commented example) so previews show a picture.
+Hosted on GitHub Pages from the `main` branch root of the `ethanransomm.github.io` repo. Any static host works: there is no build command, and the publish directory is `/`. Link previews use `assets/preview.jpg`, a 1200×630 picture of the top of the page, named by the `og:image` tag in `index.html`. That tag holds an absolute address, so update it if the domain changes, and retake the picture when the masthead changes.
