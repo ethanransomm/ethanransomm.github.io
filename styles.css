@@ -762,6 +762,10 @@ section.band::before {
   background: color-mix(in srgb, var(--accent) 86%, var(--text));
   border-color: transparent;
 }
+/* A press answers at once, with no easing: the button gives by a pixel. */
+.btn:active {
+  transform: translateY(1px);
+}
 
 .btn-small {
   padding: 0.45rem 0.95rem;
@@ -777,20 +781,12 @@ section.band::before {
   margin: 1rem 0 0;
 }
 
+/* A chip is a label, not a control, so it does not answer the pointer. */
 .chip {
   color: var(--muted);
   padding: 0.18rem 0.55rem;
   border-radius: 2px;
   background: color-mix(in srgb, var(--line) 28%, transparent);
-  transition:
-    background 0.2s ease,
-    color 0.2s ease,
-    transform 0.2s ease;
-}
-.chip:hover {
-  color: var(--text);
-  background: color-mix(in srgb, var(--accent) 18%, transparent);
-  transform: translateY(-2px);
 }
 
 .chip-status {
@@ -862,6 +858,9 @@ section.band::before {
 .pi-row:hover .pi-title,
 .pi-row:focus-visible .pi-title {
   color: var(--accent);
+}
+.pi-row:active {
+  background: var(--surface);
 }
 
 /* What it is, how it did, where the code is: all before the screenshot */
@@ -1025,7 +1024,6 @@ section.band::before {
   object-position: center;
 }
 @media (prefers-reduced-motion: reduce) {
-  .chip,
   .btn-primary::after {
     transition: none;
   }
@@ -1116,6 +1114,9 @@ section.band::before {
   border-color: var(--line);
   color: var(--text);
 }
+.thumb:active {
+  transform: translateY(1px);
+}
 .thumb[aria-pressed="true"] {
   border-color: var(--accent);
   color: var(--accent);
@@ -1195,6 +1196,9 @@ section.band::before {
 .lightbox-close:hover {
   background: rgba(10, 10, 10, 0.95);
 }
+.lightbox-close:active {
+  transform: translateY(1px);
+}
 
 /* ---- Model architecture diagrams ----------------------------------------- */
 
@@ -1246,6 +1250,9 @@ section.band::before {
 }
 .diagram-tab:hover {
   color: var(--text);
+}
+.diagram-tab:active {
+  background: var(--border);
 }
 .diagram-tab::before {
   content: "\25b8";
@@ -1612,6 +1619,9 @@ section.band::before {
   color: var(--text);
   border-color: var(--m);
 }
+.d-btn:active {
+  transform: translateY(1px);
+}
 .d-btn[aria-pressed="true"] {
   color: var(--text);
   border-color: var(--m);
@@ -1948,48 +1958,6 @@ section.band::before {
   margin-top: 3rem;
 }
 
-/* Same treatment as the toolkit cells: fill, accent, and a reticle at two
-   opposite corners. Scaled down, because a chip is a much smaller target. */
-.interests .chip {
-  position: relative;
-  transition:
-    background 0.2s ease,
-    border-color 0.2s ease,
-    color 0.2s ease,
-    transform 0.2s ease;
-}
-.interests .chip::before,
-.interests .chip::after {
-  content: "";
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  border: 0 solid var(--accent);
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  pointer-events: none;
-}
-.interests .chip::before {
-  top: 2px;
-  left: 2px;
-  border-top-width: 1px;
-  border-left-width: 1px;
-}
-.interests .chip::after {
-  bottom: 2px;
-  right: 2px;
-  border-bottom-width: 1px;
-  border-right-width: 1px;
-}
-.interests .chip:hover {
-  background: var(--sunken);
-  border-color: var(--accent);
-  color: var(--accent);
-}
-.interests .chip:hover::before,
-.interests .chip:hover::after {
-  opacity: 1;
-}
 .interests .chips {
   margin-top: 0.75rem;
 }
@@ -2439,8 +2407,8 @@ section.band::before {
   color: color-mix(in srgb, var(--sage) 40%, transparent);
 }
 
-/* "Outside of code" sits beside the About text now. It keeps the chip hover
-   from before, a little larger since it is a feature here, not an afterthought. */
+/* "Outside of code" sits beside the About text now, with its chips a little
+   larger since it is a feature here, not an afterthought. */
 .about-grid .interests {
   margin-top: 0;
 }
@@ -2588,6 +2556,10 @@ main h2:focus {
 .tw[aria-current="page"] .tw-f {
   visibility: visible;
 }
+/* after the hover and current rules, so a press shows on either */
+.tw:active {
+  background: var(--border);
+}
 
 .tmux-right {
   display: flex;
@@ -2610,6 +2582,9 @@ main h2:focus {
 .tmux-link:hover {
   color: var(--text);
   background: var(--surface);
+}
+.tmux-link:active {
+  background: var(--border);
 }
 .tmux-link:focus-visible {
   outline: 2px solid var(--text);
@@ -2647,6 +2622,9 @@ main h2:focus {
 .pager a:hover,
 .pager a:focus-visible {
   color: var(--accent);
+}
+.pager a:active {
+  transform: translateY(1px);
 }
 
 /* On a phone the bar is taller, for fingers. Every window keeps its word and
