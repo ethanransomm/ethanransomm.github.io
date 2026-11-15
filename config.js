@@ -5,7 +5,7 @@ window.SITE = {
 
   // One sentence under the name: what you do, not who you are.
   tagline:
-    "Machine learning & AI, data heavy interfaces and web applications, with a focus on medical imaging and healthcare during my dissertation.",
+    "I develop machine learning models, data-heavy interfaces and web applications; my dissertation applied them to medical imaging and healthcare.",
   // Up to three figures under the tagline. Leave empty to hide the row.
   heroStats: [
     { value: "1,500", label: "MRI cases modelled" },
@@ -34,8 +34,8 @@ window.SITE = {
   // ---- About ---------------------------------------------------------------
   about: {
     paragraphs: [
-      "I'm a First Class Computer Science graduate from Swansea University, based near Bristol. I like solving problems where the difficulty lies in the interdisciplinary nature of a problem, exponentially increasing how much knowledge you can gain throughout the process.",
-      "I exercised this pursuit through my dissertation, combining medicine and computer science: training a Vision Transformer and a nested CNN on the PI-CAI dataset which contains 1,500 prostate MRI cases. I then built a dashboard to visualise the model outcomes and compare each model's decision. This enables a clinician to inspect where the model and ground truth disagree. Before completing my dissertation I built a music review platform in Laravel, which became the module I attained the highest marks for in my bachelor's degree.",
+      "I'm a First Class Computer Science graduate from Swansea University, based near Bristol. I like solving problems where the difficulty lies in their interdisciplinary nature, significantly increasing how much knowledge you can gain throughout the process.",
+      "I exercised this pursuit through my dissertation, combining medicine and computer science: training a Vision Transformer and a nested CNN on the PI-CAI dataset, which contains 1,500 prostate MRI cases. I then built a dashboard to visualise the model outcomes and compare each model's decision. This enables a clinician to inspect where the model and ground truth disagree. Before completing my dissertation I built a music review platform in Laravel, for the module in which I attained the highest mark of my bachelor's degree.",
     ],
   },
 
@@ -318,6 +318,8 @@ window.SITE = {
       "Building side projects to strengthen my portfolio",
     ],
     nextUp: {
+      // The small heading above the card. Leave it out for "Next up:".
+      heading: "Side project:",
       title: "Building a miniature version of ChatGPT in Python",
       description:
         "A small-scale chatbot that uses a pre-trained language model to generate responses to user input, with a focus on understanding the underlying architecture and fine-tuning techniques.",
@@ -344,7 +346,7 @@ window.SITE = {
   // ---- Contact -------------------------------------------------------------
   contact: {
     blurb:
-      "I'm currently searching & applying for graduate software, data analytics and ML engineering roles.",
+      "I'm currently applying for graduate software, data analytics and ML engineering roles.",
     email: "ethanransom271@gmail.com",
     // The text on the email button, in the masthead and on the contact page.
     emailLabel: "Email me",

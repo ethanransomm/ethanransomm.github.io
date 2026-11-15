@@ -3243,7 +3243,7 @@
     if (n.nextUp && n.nextUp.title) {
       byId("now-next").classList.add("reveal");
       mount("now-next", [
-        el("h3", { text: "Next up:" }),
+        el("h3", { text: n.nextUp.heading || "Next up:" }),
         el("p", { class: "next-title" }, [
           el("strong", { text: n.nextUp.title }),
           n.nextUp.status
