@@ -233,7 +233,7 @@ window.SITE = {
       },
       {
         name: "Tooling",
-        icon: "",
+        icon: "docker",
         project: "",
         note: "Both projects",
         with: ["Git", "Docker", "Unit testing"],
@@ -243,8 +243,8 @@ window.SITE = {
     studied: [
       {
         name: "Machine learning",
-        icon: "",
-        note: "Big Data and Machine Learning, 88%: regression, random forests, PCA, CNNs, Vision Transformers, image segmentation, Spark",
+        icon: "svm",
+        note: "Big Data and Machine Learning, 88%: regression, random forests, PCA, CNNs, Vision Transformers, image segmentation",
       },
       {
         name: "Java",

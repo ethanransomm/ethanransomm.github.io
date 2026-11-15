@@ -3040,7 +3040,8 @@
   }
 
   // ---- Toolkit -------------------------------------------------------------
-  // Simplified language marks, inlined so the page needs no icon library.
+  // Simplified language and tool marks, inlined so the page needs no icon
+  // library. A toolkit row picks one by name with `icon` in config.js.
   // All of them use currentColor, so they pick up the accent on hover and
   // re-theme in dark mode without a second set of files.
 
@@ -3076,6 +3077,27 @@
     ada:
       '<rect x="2.6" y="2.6" width="18.8" height="18.8" fill="none" stroke="currentColor" stroke-width="1.6"/>' +
       '<text x="12" y="15.2" text-anchor="middle" font-size="7" font-weight="700">Ada</text>',
+    // the whale with its stack of containers: four, three, then one
+    docker:
+      '<path d="M1.5 12.2h15.2c1 0 1.8-.3 2.3-.8-.6-1.2-.5-2.6.5-3.9 1.1.7 1.7 1.7 1.8 2.8.9-.2 1.7 0 2.2.4-.4 1.3-1.5 2-3 2-1.6 4.6-5.2 7.3-10.6 7.3C5.2 20 1.8 17.6 1.5 12.2Z"/>' +
+      '<rect x="3" y="8.8" width="2.8" height="2.8"/>' +
+      '<rect x="6.4" y="8.8" width="2.8" height="2.8"/>' +
+      '<rect x="9.8" y="8.8" width="2.8" height="2.8"/>' +
+      '<rect x="13.2" y="8.8" width="2.8" height="2.8"/>' +
+      '<rect x="6.4" y="5.4" width="2.8" height="2.8"/>' +
+      '<rect x="9.8" y="5.4" width="2.8" height="2.8"/>' +
+      '<rect x="13.2" y="5.4" width="2.8" height="2.8"/>' +
+      '<rect x="9.8" y="2" width="2.8" height="2.8"/>',
+    // A support vector machine: two classes, the line that separates them,
+    // and the dashed margin on either side. One class is solid dots and the
+    // other is rings, so they are told apart without a second colour.
+    svm:
+      '<g fill="none" stroke="currentColor" stroke-linecap="round">' +
+      '<path d="M4 20 20 4" stroke-width="1.7"/>' +
+      '<path d="M3 15.6 15.6 3M8.4 21 21 8.4" stroke-width="1.1" stroke-dasharray="2 2.2"/>' +
+      '<g stroke-width="1.2"><circle cx="19.6" cy="19.2" r="1.4"/><circle cx="20.4" cy="13.8" r="1.4"/><circle cx="14.4" cy="20.4" r="1.4"/></g>' +
+      "</g>" +
+      '<circle cx="4.6" cy="4.8" r="1.3"/><circle cx="9.4" cy="3.4" r="1.3"/><circle cx="3.6" cy="10.2" r="1.3"/>',
   };
 
   function langIcon(name) {
