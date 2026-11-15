@@ -1867,8 +1867,15 @@
     ((S.contact && S.contact.links) || []).forEach(function (l) {
       if (l && l.url && l.hero) actions.push(link(l.label, l.url, "btn"));
     });
+    // the same label as the button on the contact page: one action, one name
     if (S.contact && S.contact.email) {
-      actions.push(link("Say hello", "mailto:" + S.contact.email, "btn"));
+      actions.push(
+        link(
+          S.contact.emailLabel || "Email me",
+          "mailto:" + S.contact.email,
+          "btn",
+        ),
+      );
     }
     mount("hero-actions", actions);
 

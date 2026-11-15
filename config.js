@@ -346,7 +346,8 @@ window.SITE = {
     blurb:
       "I'm currently searching & applying for graduate software, data analytics and ML engineering roles.",
     email: "ethanransom271@gmail.com",
-    emailLabel: "Get in touch",
+    // The text on the email button, in the masthead and on the contact page.
+    emailLabel: "Email me",
     // `hero: true` also puts the link in the button row under your name.
     links: [
       { label: "CV", url: "cv.pdf", hero: true },
