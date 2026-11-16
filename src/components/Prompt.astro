@@ -1,0 +1,96 @@
+---
+// A powerline shell prompt followed by a command: the line that "opens"
+// each section, and the fastfetch block on the home page. It is decoration,
+// so it is hidden from screen readers; the heading beside it is the real
+// label.
+//
+// It is built the way the real one is: a logo segment, the working
+// directory, and a chevron into the command. The chevrons are CSS triangles
+// rather than the Nerd Font separator glyph, which would be tofu for anyone
+// who has not installed the patched font.
+
+interface Props {
+  /** The command shown after the prompt, e.g. "ls ~/projects". */
+  cmd: string;
+}
+const { cmd } = Astro.props;
+---
+
+<p class="sec-cmd" aria-hidden="true">
+  <span class="pl">
+    <span class="pl-seg pl-logo">
+      <svg class="arch" viewBox="0 0 24 24" focusable="false">
+        <path
+          d="M12 1.5c-1 2.4-1.6 4-2.7 6.3.7.7 1.5 1.6 2.8 2.5-1.4-.6-2.4-1.2-3.1-1.8-1.4 2.9-3.6 7-8 15 3.5-2 6.2-3.2 8.7-3.7-.1-.5-.2-1-.2-1.5v-.1c.1-2.1 1.2-3.8 2.4-3.7 1.2 0 2.2 1.7 2.3 3.9 0 .4 0 .8-.1 1.2 2.5.5 5.2 1.7 8.6 3.6-.7-1.2-1.3-2.3-1.9-3.4-.9-.7-1.9-1.6-3.8-2.6 1.3.3 2.2.7 3 1.1C16.3 8.7 15.8 7 12 1.5Z"
+        ></path>
+      </svg>
+    </span>
+    <span class="pl-sep pl-sep-a"></span>
+    <span class="pl-seg pl-path">~</span>
+    <span class="pl-sep pl-sep-b"></span>
+  </span>
+  <span class="pl-cmd">{cmd}</span>
+</p>
+
+<style>
+  .sec-cmd {
+    display: flex;
+    align-items: center;
+    margin: 0 0 0.75rem;
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    line-height: 1.2;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .pl {
+    display: inline-flex;
+    align-items: stretch;
+    margin-right: 0.6rem;
+    font-size: 0.9em;
+    line-height: 1;
+  }
+  .pl-seg {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.34em 0.62em;
+    font-weight: 600;
+  }
+  .pl-logo {
+    background: var(--accent);
+    color: var(--on-accent);
+    border-radius: 3px 0 0 3px;
+    padding-right: 0.5em;
+  }
+  .arch {
+    display: block;
+    width: 1.05em;
+    height: 1.05em;
+    fill: currentColor;
+  }
+  .pl-path {
+    background: var(--line);
+    color: var(--bg);
+  }
+  /* The chevrons: each takes the colour of the segment behind it */
+  .pl-sep {
+    width: 0;
+    height: 0;
+    align-self: stretch;
+    border-top: 0.95em solid transparent;
+    border-bottom: 0.95em solid transparent;
+  }
+  .pl-sep-a {
+    border-left: 0.58em solid var(--accent);
+  }
+  .pl-sep-b {
+    border-left: 0.58em solid var(--line);
+  }
+
+  @media (max-width: 680px) {
+    .sec-cmd {
+      white-space: normal;
+    }
+  }
+</style>

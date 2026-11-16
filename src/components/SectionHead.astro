@@ -1,0 +1,73 @@
+---
+// A page or section heading, drawn as a shell prompt and its output: the
+// prompt with the command that "opens" the section, then the written title,
+// then a dashed trace running out to the margin.
+//
+// The title is the real heading. A page's own title is an <h1>; a section
+// inside a page passes level={2}.
+import Prompt from "./Prompt.astro";
+
+interface Props {
+  title: string;
+  /** The command shown after the prompt, e.g. "ls ~/projects". */
+  cmd: string;
+  /** The heading's id, for aria-labelledby and in-page links. */
+  id?: string;
+  level?: 1 | 2;
+}
+const { title, cmd, id, level = 1 } = Astro.props;
+const Heading = level === 1 ? "h1" : "h2";
+---
+
+<header class="sec-head">
+  <Prompt cmd={cmd} />
+  <div class="sec-line">
+    <Heading id={id}>{title}</Heading>
+  </div>
+</header>
+
+<style>
+  .sec-head {
+    margin-bottom: 3rem;
+  }
+
+  .sec-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 1.1rem;
+  }
+  .sec-line :is(h1, h2) {
+    margin: 0;
+  }
+  /* A dashed signal trace running out to the margin, ending in a block. The
+     dashes are a gradient, so the whole thing is one element. It is simply
+     there: nothing draws it in. */
+  .sec-line::after {
+    content: "";
+    flex: 1;
+    height: 6px;
+    align-self: center;
+    margin-top: 0.4em;
+    background-image:
+      linear-gradient(var(--sage), var(--sage)),
+      repeating-linear-gradient(
+        to right,
+        var(--border) 0 5px,
+        transparent 5px 9px
+      );
+    background-size:
+      6px 6px,
+      100% 1px;
+    background-position:
+      right center,
+      left center;
+    background-repeat: no-repeat, repeat-x;
+  }
+
+  @media (max-width: 680px) {
+    .sec-head {
+      margin-bottom: 2rem;
+    }
+  }
+</style>

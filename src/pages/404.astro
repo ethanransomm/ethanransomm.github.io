@@ -1,0 +1,28 @@
+---
+import Base from "../layouts/Base.astro";
+import SectionHead from "../components/SectionHead.astro";
+---
+
+<Base title="Page not found" description="That page does not exist." noindex>
+  <section aria-labelledby="missing-title">
+    <SectionHead title="Page not found" cmd="cd /this-page" id="missing-title" />
+    <pre class="out"><span class="c">bash:</span> cd: /this-page: No such file or directory
+<span class="c">$</span> grep -r "this-page" ./discography
+<span class="c">0 results.</span> Deep cut, or it never charted.</pre>
+    <p><a href="/">Take me back home</a></p>
+  </section>
+</Base>
+
+<style>
+  .out {
+    margin: 0 0 1.5rem;
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+    line-height: 1.7;
+    white-space: pre-wrap;
+    color: var(--text);
+  }
+  .c {
+    color: var(--accent);
+  }
+</style>

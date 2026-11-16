@@ -1,0 +1,280 @@
+---
+// The navigation, drawn like a tmux status line: a session name, one
+// numbered window per page with a star on the current one, the CV and
+// profile links, and a clock. It is plain links, so it works without script;
+// only the clock needs it.
+import { site, pages, isExternal, type PageId } from "../data/site";
+
+interface Props {
+  /** The page being shown, if it is one of the numbered windows. */
+  current?: PageId;
+}
+const { current } = Astro.props;
+---
+
+<nav id="tmux" class="tmux scanlines" aria-label="Pages">
+  <span class="tmux-session" aria-hidden="true">
+    <span class="tmux-seg">[{site.statusBar.session}]</span>
+    <span class="tmux-sep"></span>
+  </span>
+
+  <ol class="tmux-windows">
+    {
+      pages.map((p, i) => (
+        <li>
+          <a
+            href={p.href}
+            class="tw"
+            aria-current={p.id === current ? "page" : undefined}
+          >
+            <span class="tw-n">{i + 1}</span>
+            <span class="tw-c">:</span>
+            <span class="tw-l">{p.label}</span>
+            <span class="tw-f" aria-hidden="true">
+              *
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ol>
+
+  <span class="tmux-right">
+    <span class="tmux-links">
+      {
+        site.links.map((l) => (
+          <a
+            class="tmux-link"
+            href={l.href}
+            target={isExternal(l.href) ? "_blank" : undefined}
+            rel={isExternal(l.href) ? "noopener noreferrer" : undefined}
+          >
+            {l.label.toLowerCase()}
+          </a>
+        ))
+      }
+    </span>
+    <span class="tmux-meta" aria-hidden="true">
+      <span>{site.statusBar.right}</span>
+      <span class="tmux-clock" data-clock></span>
+    </span>
+  </span>
+</nav>
+
+<script>
+  // The clock is decoration: empty without script, and hidden from screen
+  // readers either way.
+  const clock = document.querySelector<HTMLElement>("[data-clock]");
+  if (clock) {
+    const tick = () => {
+      const d = new Date();
+      clock.textContent =
+        String(d.getHours()).padStart(2, "0") +
+        ":" +
+        String(d.getMinutes()).padStart(2, "0");
+    };
+    tick();
+    window.setInterval(tick, 15000);
+  }
+</script>
+
+<style>
+  .tmux {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    z-index: 30;
+    display: flex;
+    align-items: stretch;
+    height: calc(var(--bar-h) + env(safe-area-inset-top, 0px));
+    padding-top: env(safe-area-inset-top, 0px);
+    background: var(--sunken);
+    border-bottom: 1px solid var(--line);
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+    line-height: 1;
+    white-space: nowrap;
+  }
+  /* the scanlines sit over the bar's ground but under its links */
+  .tmux > * {
+    position: relative;
+    z-index: 3;
+  }
+
+  a {
+    background-image: none;
+    padding-bottom: 0;
+    text-decoration: none;
+  }
+
+  .tmux-session {
+    display: flex;
+    align-items: stretch;
+    flex: none;
+  }
+  .tmux-seg {
+    display: flex;
+    align-items: center;
+    padding: 0 0.55rem 0 0.8rem;
+    background: var(--accent);
+    color: var(--on-accent);
+    font-weight: 700;
+  }
+  /* The powerline chevron, as a CSS triangle, so it never shows as tofu for
+     someone without a patched font. */
+  .tmux-sep {
+    width: 0;
+    height: 0;
+    border-top: calc(var(--bar-h) / 2) solid transparent;
+    border-bottom: calc(var(--bar-h) / 2) solid transparent;
+    border-left: 0.62rem solid var(--accent);
+  }
+
+  .tmux-windows {
+    display: flex;
+    align-items: stretch;
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    padding: 0 0.35rem;
+    list-style: none;
+  }
+  .tmux-windows li {
+    display: flex;
+  }
+  .tw {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    padding: 0 0.6rem;
+    color: var(--muted);
+  }
+  .tw:hover {
+    color: var(--text);
+    background-color: var(--surface);
+  }
+  .tw-n {
+    color: var(--sage);
+  }
+  .tw-f {
+    visibility: hidden;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .tw[aria-current="page"] {
+    color: var(--text);
+    background-color: var(--surface);
+    box-shadow: inset 0 -2px 0 var(--accent);
+  }
+  .tw[aria-current="page"] .tw-n {
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .tw[aria-current="page"] .tw-f {
+    visibility: visible;
+  }
+  /* after the hover and current rules, so a press shows on either */
+  .tw:active,
+  .tmux-link:active {
+    background-color: var(--border);
+  }
+  .tw:focus-visible,
+  .tmux-link:focus-visible {
+    outline: 2px solid var(--text);
+    outline-offset: -2px;
+  }
+
+  .tmux-right {
+    display: flex;
+    align-items: stretch;
+    flex: none;
+    color: var(--muted);
+  }
+  .tmux-links {
+    display: flex;
+    align-items: stretch;
+  }
+  .tmux-link {
+    display: flex;
+    align-items: center;
+    padding: 0 0.6rem;
+    color: var(--sage);
+  }
+  .tmux-link:hover {
+    color: var(--text);
+    background-color: var(--surface);
+  }
+  .tmux-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0 0.9rem;
+  }
+  .tmux-clock {
+    color: var(--sage);
+    min-width: 5ch; /* holds its place before the script fills it */
+  }
+
+  @media (max-width: 980px) {
+    .tmux-meta {
+      display: none;
+    }
+  }
+
+  /* On a tablet the five windows and the three links share one line, so the
+     bar drops to the smallest size before the last window meets the first
+     link. */
+  @media (max-width: 900px) {
+    .tmux {
+      font-size: var(--fs-xs);
+    }
+  }
+
+  /* On a phone every window keeps its word and drops its number, and the
+     links move out of the bar: the CV and profiles are on the home and
+     contact pages. */
+  @media (max-width: 760px) {
+    .tmux-right {
+      display: none;
+    }
+    .tmux-windows {
+      justify-content: space-between;
+      /* a last resort: if the words ever outgrow the bar, it scrolls */
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .tw {
+      min-width: 0;
+      padding: 0 0.5rem;
+    }
+    .tw-n,
+    .tw-c,
+    .tw-f {
+      display: none;
+    }
+  }
+  @media (max-width: 460px) {
+    .tmux-session {
+      display: none;
+    }
+    .tmux-windows {
+      padding: 0;
+    }
+  }
+
+  /* The narrowest phones: tighter still, so all five words fit a 320px
+     screen with none cut off. */
+  @media (max-width: 380px) {
+    .tw {
+      padding: 0 0.2rem;
+    }
+  }
+
+  @media print {
+    .tmux {
+      display: none;
+    }
+  }
+</style>

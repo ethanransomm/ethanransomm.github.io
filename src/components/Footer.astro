@@ -1,0 +1,47 @@
+---
+import { site } from "../data/site";
+
+// The year the site was last built. It is rebuilt on every push.
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <p>&copy; {year} {site.name}</p>
+</footer>
+
+<style>
+  .site-footer {
+    padding-top: 2.5rem;
+    padding-bottom: 4rem;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.04em;
+  }
+  p {
+    margin: 0;
+  }
+
+  /* A burst of signal across the foot of the page, thinning out to nothing */
+  .site-footer::before {
+    content: "";
+    display: block;
+    height: 9px;
+    margin-bottom: 1.75rem;
+    opacity: 0.4;
+    background-image: repeating-linear-gradient(
+      to right,
+      var(--line) 0 2px,
+      transparent 2px 5px,
+      var(--line) 5px 6px,
+      transparent 6px 12px,
+      var(--line) 12px 15px,
+      transparent 15px 17px,
+      var(--line) 17px 18px,
+      transparent 18px 25px
+    );
+    -webkit-mask-image: linear-gradient(to right, #000, transparent 88%);
+    mask-image: linear-gradient(to right, #000, transparent 88%);
+  }
+</style>

@@ -1,0 +1,74 @@
+/* ==========================================================================
+   TAILWIND, ALONGSIDE THE HAND-WRITTEN STYLES
+
+   New components are written with Tailwind's utility classes; the pages that
+   already existed keep their own styles. The two share one set of tokens:
+   the colours, fonts and type sizes below are the same ones global.css and
+   palettes.css define, under Tailwind's names.
+
+   Two deliberate choices:
+     - Tailwind's base reset ("preflight") is left out. It would restyle
+       every heading, list and link the existing pages rely on.
+     - The utilities are not put in a cascade layer, so a utility on an
+       element beats the plain element rules in global.css (a `m-0` on a
+       paragraph wins over the default paragraph margin).
+
+   Because there is no reset, a border needs its style as well as its width:
+   write `border border-solid`, not `border` alone.
+   ========================================================================== */
+
+@layer theme;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css";
+
+/* the old site's files are reference only; do not read class names from them */
+@source not "../../legacy";
+
+@layer theme {
+  /* Colours point at the palette's own variables, so a palette change in
+     palettes.css reaches the utilities too. Tailwind's default colours are
+     removed, so nothing off-palette can be written by accident. */
+  @theme inline {
+    --color-*: initial;
+    --color-bg: var(--bg);
+    --color-surface: var(--surface);
+    --color-sunken: var(--sunken);
+    --color-ink: var(--text);
+    --color-muted: var(--muted);
+    --color-sage: var(--sage);
+    --color-accent: var(--accent);
+    --color-on-accent: var(--on-accent);
+    --color-edge: var(--border);
+    --color-line: var(--line);
+    /* the three model colours, fixed across palettes */
+    --color-ensemble: #8b5cf6;
+    --color-swin: #2a9bd4;
+    --color-unetpp: #d4608f;
+    --color-transparent: transparent;
+    --color-current: currentColor;
+  }
+
+  @theme {
+    /* the same two faces as global.css */
+    --font-mono:
+      "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Consolas,
+      monospace;
+    --font-sans:
+      "IBM Plex Sans Variable", system-ui, -apple-system, "Segoe UI", Roboto,
+      sans-serif;
+
+    /* the five type sizes, under Tailwind's names:
+       text-xs and text-sm are for the mono; base, lg and xl for the sans */
+    --text-xs: 0.76rem;
+    --text-xs--line-height: 1.5;
+    --text-sm: 0.85rem;
+    --text-sm--line-height: 1.5;
+    --text-base: 1.0625rem;
+    --text-base--line-height: 1.65;
+    --text-lg: 1.1875rem;
+    --text-lg--line-height: 1.55;
+    --text-xl: 1.375rem;
+    --text-xl--line-height: 1.3;
+  }
+}

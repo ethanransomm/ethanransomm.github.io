@@ -1,0 +1,148 @@
+---
+// Previous and next, at the foot of every page, with the keyboard shortcuts
+// spelled out between them.
+import { pages, type PageId } from "../data/site";
+
+interface Props {
+  current: PageId;
+}
+const { current } = Astro.props;
+const i = pages.findIndex((p) => p.id === current);
+const prev = i > 0 ? pages[i - 1] : undefined;
+const next = i < pages.length - 1 ? pages[i + 1] : undefined;
+---
+
+<nav class="pager" aria-label="Previous and next page">
+  {
+    prev ? (
+      <a href={prev.href} class="pager-link" rel="prev">
+        <span aria-hidden="true">&lt;-</span>
+        <span class="sr-only">Previous page:</span>
+        <span>{`${i}:${prev.label}`}</span>
+      </a>
+    ) : (
+      <span />
+    )
+  }
+
+  <!-- Shown by the script in the base layout, since the shortcuts need it.
+       It stays hidden at phone width, where there are no keys to press. -->
+  <p class="keys" data-keys hidden>
+    <span class="keys-list">
+      <span><kbd>1</kbd> to <kbd>{pages.length}</kbd> pick a page</span>
+      <span><kbd>n</kbd> next</span>
+      <span><kbd>p</kbd> previous</span>
+    </span>
+    <button
+      type="button"
+      class="keys-toggle"
+      data-keys-toggle
+      aria-pressed="true"
+    >
+      shortcuts on
+    </button>
+  </p>
+
+  {
+    next ? (
+      <a href={next.href} class="pager-link" rel="next">
+        <span class="sr-only">Next page:</span>
+        <span>{`${i + 2}:${next.label}`}</span>
+        <span aria-hidden="true">-&gt;</span>
+      </a>
+    ) : (
+      <span />
+    )
+  }
+</nav>
+
+<style>
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0 0 3rem;
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+  }
+  .pager-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 1ch;
+    min-height: 2.75rem; /* 44px, the size a thumb needs */
+    padding-bottom: 0;
+    background-image: none;
+    color: var(--muted);
+  }
+  .pager-link:hover,
+  .pager-link:focus-visible {
+    color: var(--accent);
+  }
+  .pager-link:active {
+    transform: translateY(1px);
+  }
+
+  .keys {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem 1rem;
+    margin: 0;
+    color: var(--muted);
+    font-size: var(--fs-xs);
+  }
+  kbd {
+    display: inline-block;
+    min-width: 1.5em;
+    padding: 0.05em 0.35em;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    font: inherit;
+    text-align: center;
+    color: var(--text);
+  }
+  .keys-toggle {
+    min-height: 1.75rem;
+    padding: 0 0.6rem;
+    border: 1px solid color-mix(in srgb, var(--muted) 62%, var(--bg));
+    border-radius: 2px;
+    background: transparent;
+    color: var(--sage);
+    font: inherit;
+    cursor: pointer;
+  }
+  .keys-toggle:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .keys-toggle:active {
+    transform: translateY(1px);
+  }
+  .keys-toggle[aria-pressed="false"] {
+    color: var(--muted);
+  }
+  .keys-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.3rem 1rem;
+  }
+  .keys.is-off .keys-list {
+    opacity: 0.5;
+  }
+
+  /* a phone has no keys to press, so no hint */
+  @media (max-width: 760px) {
+    .keys {
+      display: none;
+    }
+  }
+
+  @media print {
+    .pager {
+      display: none;
+    }
+  }
+</style>

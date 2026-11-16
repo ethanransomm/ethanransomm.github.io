@@ -1,0 +1,113 @@
+/* ==========================================================================
+   PALETTES
+
+   The site is dark only. Each palette is one block of colour tokens; the
+   one in use is named by `data-palette` on <html>, set in the base layout.
+   "layer" is the default and needs no attribute.
+
+   The three colours inside the charts and model diagrams (violet, azure,
+   rose) are not here: they identify the three models, so they stay fixed
+   whichever palette is chosen.
+   ========================================================================== */
+
+:root,
+:root[data-palette="layer"] {
+  /* Layer: a murky desaturated ground after Lain, Psycho-Pass, Ghost in the
+     Shell and Akira, with a terminal's own green as the one loud thing on
+     it. Neutrals carry a teal cast rather than being clean grey; the
+     metadata layer is a soft teal, so the green never has to compete. */
+  --accent: #4f9d3a;
+  --sage: #86aca6;
+  --on-accent: #06130a;
+  --bg: #0c1214;
+  --surface: #131a1c;
+  --sunken: #070c0d;
+  --text: #e8e5dc;
+  --muted: #8fa09d;
+  --border: #1d2729;
+  --line: #334648;
+}
+
+:root[data-palette="pine"] {
+  /* Pine: forest green on deep navy. */
+  --accent: #46a872;
+  --sage: #a3b79d;
+  --on-accent: #06180f;
+  --bg: #0d1826;
+  --surface: #142236;
+  --sunken: #091220;
+  --text: #e4ecf3;
+  --muted: #93a7bb;
+  --border: #1f3148;
+  --line: #354a63;
+}
+
+:root[data-palette="vinyl"] {
+  /* Vinyl: violet on near-black, sampled from the Music Musings UI. */
+  --accent: #a78bfa;
+  --sage: #a1a1aa;
+  --on-accent: #16081f;
+  --bg: #121212;
+  --surface: #1a1a1c;
+  --sunken: #0d0d0e;
+  --text: #ededed;
+  --muted: #a1a1aa;
+  --border: #2a2a2d;
+  --line: #3f3f45;
+}
+
+:root[data-palette="oxide"] {
+  /* Oxide: burnt orange on warm charcoal. */
+  --accent: #ff8a5c;
+  --sage: #a89f96;
+  --on-accent: #1a0c05;
+  --bg: #141210;
+  --surface: #1e1b18;
+  --sunken: #0e0c0b;
+  --text: #efe9e3;
+  --muted: #a89f96;
+  --border: #2e2a26;
+  --line: #45403a;
+}
+
+:root[data-palette="signal"] {
+  /* Signal: acid lime on true black. */
+  --accent: #bef264;
+  --sage: #9ea6a3;
+  --on-accent: #121505;
+  --bg: #0f1011;
+  --surface: #17191a;
+  --sunken: #0a0b0b;
+  --text: #eceef0;
+  --muted: #9ea6a3;
+  --border: #26292a;
+  --line: #3b3f40;
+}
+
+:root[data-palette="cobalt"] {
+  /* Cobalt: electric blue on slate. */
+  --accent: #7aa2f7;
+  --sage: #9aa4b2;
+  --on-accent: #0a1020;
+  --bg: #0d1117;
+  --surface: #161b22;
+  --sunken: #090d12;
+  --text: #e6edf3;
+  --muted: #9aa4b2;
+  --border: #262c36;
+  --line: #3a424e;
+}
+
+:root[data-palette="ember"] {
+  /* Ember: gold on warm black. */
+  --accent: #f0b429;
+  --sage: #a69d90;
+  --on-accent: #1a1203;
+  --bg: #121010;
+  --surface: #1c1917;
+  --sunken: #0c0a0a;
+  --text: #f0ebe4;
+  --muted: #a69d90;
+  --border: #2d2823;
+  --line: #443d34;
+}
