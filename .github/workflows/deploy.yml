@@ -1,0 +1,48 @@
+# Builds the site and publishes it to GitHub Pages.
+#
+# It runs on every push to main, and can be run by hand from the Actions tab.
+# For it to publish, the repository's Pages source must be "GitHub Actions"
+# (Settings > Pages > Build and deployment > Source).
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# What the workflow is allowed to do: read the code, and publish to Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time. A newer push waits for a running deployment to
+# finish rather than cancelling it part-way.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v7
+
+      # Installs the dependencies, runs `npm run build` (which type-checks
+      # first, so a mistake in a project file stops here) and hands the built
+      # site to the deploy job.
+      - name: Install, build and upload the site
+        uses: withastro/action@v6
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
