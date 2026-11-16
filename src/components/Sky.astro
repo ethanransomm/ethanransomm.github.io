@@ -1,0 +1,205 @@
+---
+// The ASCII field, as the sky over the power lines: a wide, low band between
+// the masthead and About. It runs the full width of the window and fades at
+// both ends and toward the bottom, where the poles rise into it.
+//
+// The frame in the HTML is drawn when the site is built, so the artwork is
+// there without script and stays put under reduced motion. The script only
+// sets it moving, and the button stops it again.
+import { fieldFrame, FIELD_COLS, FIELD_ROWS, FIELD_T0 } from "../scripts/field";
+
+const frame = fieldFrame(FIELD_COLS, FIELD_ROWS, FIELD_T0);
+---
+
+<div class="sky">
+  <!-- The band carries the same scanline texture as the masthead above it
+       and the power lines below, so the three read as one screen. -->
+  <div class="sky-band scanlines" aria-hidden="true">
+    <pre
+      class="field"
+      data-field
+      data-cols={FIELD_COLS}
+      data-rows={FIELD_ROWS}
+      data-t={FIELD_T0}
+      set:html={frame}
+    />
+  </div>
+  <!-- Revealed by the script, and only when the artwork is actually moving. -->
+  <button type="button" class="sky-toggle" data-field-toggle hidden>
+    <span data-field-label>pause</span>
+    <span class="sr-only"> the animated artwork</span>
+  </button>
+</div>
+
+<script>
+  import { fieldFrame } from "../scripts/field";
+
+  const host = document.querySelector<HTMLElement>("[data-field]");
+  const button = document.querySelector<HTMLButtonElement>("[data-field-toggle]");
+  const label = document.querySelector<HTMLElement>("[data-field-label]");
+  const still = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  if (host && button && label && !still.matches) {
+    const cols = Number(host.dataset.cols);
+    const rows = Number(host.dataset.rows);
+    let t = Number(host.dataset.t);
+    let timer: number | undefined;
+    let paused = false; // the reader's choice
+    let visible = true; // on screen, in a tab that is showing
+
+    const tick = () => {
+      t += 0.06;
+      host.innerHTML = fieldFrame(cols, rows, t);
+    };
+    const sync = () => {
+      const run = !paused && visible && !document.hidden;
+      if (run && timer === undefined) timer = window.setInterval(tick, 80);
+      if (!run && timer !== undefined) {
+        window.clearInterval(timer);
+        timer = undefined;
+      }
+    };
+
+    button.hidden = false;
+    button.addEventListener("click", () => {
+      paused = !paused;
+      label.textContent = paused ? "play" : "pause";
+      sync();
+    });
+
+    // no point animating it while it is scrolled away or the tab is hidden
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver((entries) => {
+        visible = entries[0].isIntersecting;
+        sync();
+      }).observe(host);
+    }
+    document.addEventListener("visibilitychange", sync);
+    // if the reader turns reduced motion on mid-visit, stop and stay stopped
+    still.addEventListener("change", () => {
+      if (still.matches) {
+        paused = true;
+        button.hidden = true;
+        sync();
+      }
+    });
+
+    sync();
+  }
+</script>
+
+<style>
+  /* The band keeps its place in the content column, for the button; the
+     artwork inside it breaks out to the full width of the window. */
+  .sky {
+    position: relative;
+    /* the power lines start inside the band's faded foot */
+    margin-bottom: -3.25rem;
+  }
+  .sky-band {
+    position: relative;
+    left: 50%;
+    width: 100vw;
+    margin-left: -50vw;
+    overflow: hidden;
+    pointer-events: none;
+    /* the ends dissolve, however wide the window is */
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      #000 16%,
+      #000 84%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      #000 16%,
+      #000 84%,
+      transparent 100%
+    );
+  }
+
+  /* A grid of characters: its size is what sets the artwork's size, so it
+     stands outside the type scale. It is centred, and wider than the window
+     on most screens. */
+  .field {
+    width: max-content;
+    margin: 0 0 0 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    line-height: 1.18;
+    letter-spacing: 0;
+    white-space: pre;
+    color: var(--muted);
+    user-select: none;
+    /* it is the sky behind the page's content, so it sits a step back */
+    opacity: 0.85;
+  }
+
+  /* Colour comes from the span classes the script emits, quiet to bright. */
+  .field :global(.a-grid) {
+    color: var(--line);
+  }
+  .field :global(.a-lo) {
+    color: color-mix(in srgb, var(--sage) 45%, transparent);
+  }
+  .field :global(.a-mid) {
+    color: color-mix(in srgb, var(--sage) 85%, transparent);
+  }
+  .field :global(.a-glow) {
+    color: color-mix(in srgb, var(--accent) 60%, transparent);
+  }
+  .field :global(.a-hi) {
+    color: var(--accent);
+    text-shadow: 0 0 10px color-mix(in srgb, var(--accent) 55%, transparent);
+  }
+  .field :global(.a-crest) {
+    color: var(--text);
+    text-shadow:
+      0 0 3px var(--accent),
+      0 0 16px color-mix(in srgb, var(--accent) 70%, transparent);
+  }
+
+  /* The pause button sits just above the band, at the right end of the
+     content column, so it never covers the artwork. */
+  .sky-toggle {
+    position: absolute;
+    right: 0;
+    bottom: 100%;
+    margin-bottom: 0.4rem;
+    z-index: 3;
+    min-height: 1.75rem;
+    padding: 0 0.6rem;
+    border: 1px solid color-mix(in srgb, var(--muted) 62%, var(--bg));
+    border-radius: 2px;
+    background: var(--bg);
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    cursor: pointer;
+  }
+  .sky-toggle:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .sky-toggle:active {
+    transform: translateY(1px);
+  }
+
+  @media (max-width: 760px) {
+    /* room above the band for the larger button, clear of the facts */
+    .sky {
+      margin-top: 1.75rem;
+    }
+    .field {
+      font-size: 0.7rem;
+    }
+    /* a thumb needs more to aim at */
+    .sky-toggle {
+      min-height: 2.75rem;
+      padding: 0 0.9rem;
+    }
+  }
+</style>

@@ -1,0 +1,142 @@
+---
+// The power lines under the masthead. Two layers of utility poles and
+// sagging cable: a distant row, small and faint, behind a near row that is
+// tall and heavy. Irregular spacing and height throughout, because evenly
+// spaced poles read as a fence.
+//
+// The drawing is worked out when the site is built, so the page carries a
+// finished picture and no script.
+
+interface Layer {
+  start: number;
+  gap: number;
+  jitter: number;
+  top: number;
+  range: number;
+  freq: number;
+  arms: number;
+  arm0: number;
+  armStep: number;
+  armW: number;
+  sag: number;
+  wire: number;
+  pole: number;
+  arm: number;
+  opacity: number;
+}
+
+const W = 1200;
+const H = 270;
+const r = (n: number) => Math.round(n * 10) / 10;
+
+function layer(cfg: Layer): string {
+  const poles: { x: number; top: number; arms: number }[] = [];
+  let x = cfg.start;
+  while (x < W + 80) {
+    poles.push({
+      x,
+      top: cfg.top + ((Math.sin(x * cfg.freq) + 1) / 2) * cfg.range,
+      arms: Math.round(x) % 3 === 0 ? cfg.arms + 1 : cfg.arms,
+    });
+    x += cfg.gap + Math.round(Math.sin(x * 0.07) * cfg.jitter);
+  }
+
+  let g = "";
+  // the cables, sagging between each pair of poles
+  for (let i = 0; i < poles.length - 1; i++) {
+    const a = poles[i];
+    const b = poles[i + 1];
+    for (let k = 0; k < Math.min(a.arms, b.arms); k++) {
+      const ya = a.top + cfg.arm0 + k * cfg.armStep;
+      const yb = b.top + cfg.arm0 + k * cfg.armStep;
+      const dip = Math.max(ya, yb) + cfg.sag + k * cfg.sag * 0.3;
+      g += `<path d="M${r(a.x)} ${r(ya)} Q${r((a.x + b.x) / 2)} ${r(dip)} ${r(b.x)} ${r(yb)}" fill="none" stroke-width="${cfg.wire}" opacity="0.7"/>`;
+    }
+  }
+  // the poles, their cross-arms and the insulators on each arm
+  for (const pl of poles) {
+    g += `<path d="M${r(pl.x)} ${H} V${r(pl.top)}" stroke-width="${cfg.pole}"/>`;
+    for (let j = 0; j < pl.arms; j++) {
+      const y = pl.top + cfg.arm0 + j * cfg.armStep;
+      const w = cfg.armW - j * 2;
+      g += `<path d="M${r(pl.x - w)} ${r(y)} H${r(pl.x + w)}" stroke-width="${cfg.arm}"/>`;
+      g += `<path d="M${r(pl.x - w)} ${r(y - 4)} V${r(y)}M${r(pl.x + w)} ${r(y - 4)} V${r(y)}" stroke-width="1.3"/>`;
+    }
+  }
+  return `<g opacity="${cfg.opacity}">${g}</g>`;
+}
+
+const far = layer({
+  start: -20,
+  gap: 118,
+  jitter: 30,
+  top: 118,
+  range: 26,
+  freq: 0.033,
+  arms: 2,
+  arm0: 6,
+  armStep: 9,
+  armW: 10,
+  sag: 9,
+  wire: 0.9,
+  pole: 1.6,
+  arm: 1.2,
+  opacity: 0.5,
+});
+const near = layer({
+  start: -40,
+  gap: 150,
+  jitter: 52,
+  top: 22,
+  range: 78,
+  freq: 0.021,
+  arms: 2,
+  arm0: 10,
+  armStep: 15,
+  armW: 20,
+  sag: 22,
+  wire: 1.2,
+  pole: 3,
+  arm: 2.1,
+  opacity: 1,
+});
+---
+
+<div class="wire-band scanlines" aria-hidden="true">
+  <svg
+    viewBox={`0 0 ${W} ${H}`}
+    preserveAspectRatio="xMidYMin slice"
+    focusable="false"
+    stroke="var(--line)"
+    set:html={far + near}
+  />
+</div>
+
+<style>
+  /* Breaks the container to run the full width of the window, and fades
+     downward so the poles recede into haze instead of standing on a shelf. */
+  .wire-band {
+    position: relative;
+    left: 50%;
+    width: 100vw;
+    margin-left: -50vw;
+    height: 11rem;
+    margin-bottom: -4rem;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0.62;
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      #000 0%,
+      #000 58%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(to bottom, #000 0%, #000 58%, transparent 100%);
+  }
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+  }
+</style>

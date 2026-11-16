@@ -1,0 +1,65 @@
+---
+// About: two paragraphs, with the interests as chips beside them.
+import SectionHead from "./SectionHead.astro";
+import { about } from "../data/site";
+---
+
+<section class="about" aria-labelledby="about-title">
+  <SectionHead title="About" cmd="whoami" id="about-title" level={2} />
+
+  <div class="about-grid">
+    <div class="prose">
+      {about.paragraphs.map((p) => <p>{p}</p>)}
+    </div>
+
+    <div class="interests">
+      <h3 class="meta">{about.interestsTitle}</h3>
+      <ul class="chips">
+        {about.interests.map((item) => <li class="chip">{item}</li>)}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* the About text starts on the first screen, under the power lines */
+  .about {
+    padding-top: 3.5rem;
+  }
+
+  /* The prose keeps its reading width; the chips take what is left. */
+  .about-grid {
+    display: grid;
+    grid-template-columns: minmax(0, var(--measure)) minmax(0, 1fr);
+    gap: 3.5rem;
+    align-items: start;
+  }
+
+  .prose p:first-child {
+    font-size: var(--fs-md);
+    line-height: 1.55;
+  }
+  .prose p:last-child {
+    margin-bottom: 0;
+  }
+
+  .interests h3 {
+    margin: 0.35rem 0 1rem;
+    color: var(--sage);
+  }
+  .interests .chips {
+    margin-top: 0;
+  }
+  /* a little larger here, since they are a feature and not an afterthought */
+  .interests .chip {
+    font-size: var(--fs-sm);
+    padding: 0.3rem 0.75rem;
+  }
+
+  @media (max-width: 860px) {
+    .about-grid {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+  }
+</style>
