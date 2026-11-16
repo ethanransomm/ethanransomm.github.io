@@ -1,0 +1,60 @@
+---
+title: "Music Musings"
+order: 2
+context: "Web Application Development, CSC-348, graded 96%"
+summary: "A music review platform in the vein of Rate Your Music, rebuilt around the parts of RYM I found awkward. Browse a Spotify-seeded library, rate albums out of 10, and argue about them in the forum."
+repo: "ethanransomm/music-musingsv2"
+
+# Buttons. A link with an empty url stays hidden until it has one.
+links:
+  - label: "View source code"
+    url: "https://github.com/ethanransomm/music-musingsv2"
+
+# The screenshot window and its slides, first slide first. A slide is a
+# screenshot (image) or a drawn graph (graph).
+ratio: "16 / 9"
+shots:
+  - image: "../../assets/projects/music-musings-home.webp"
+    alt: "The Music Musings home page: the wordmark in white and violet on near-black, above a 'Dive In' button and a Featured Albums row."
+    caption: "Landing page"
+    label: "Landing page"
+  - image: "../../assets/projects/music-musings-albums.webp"
+    alt: "The All Albums page, showing a searchable grid of album covers with artist, genre tag and release year."
+    caption: "Album library, 193 releases, searchable"
+    label: "Album library"
+  - image: "../../assets/projects/music-musings-album.webp"
+    alt: "An album page for 'loveless' by my bloody valentine, with cover art, release date, genre and a full track listing with durations."
+    caption: "Album page with Spotify track listing"
+    label: "Album page"
+  - image: "../../assets/projects/music-musings-review.webp"
+    alt: "A review page showing a 5/10 score, a written musing, and a threaded comment from an admin user."
+    caption: "Reviews, scores and threaded comments"
+    label: "Reviews"
+  - image: "../../assets/projects/music-musings-artists.webp"
+    alt: "The Artists page, a grid of circular artist portraits each with an album count."
+    caption: "Artist directory seeded from Spotify"
+    label: "Artist directory"
+  - graph: "mm-erd"
+    alt: "Database schema: artists, albums, songs, users, profiles, favourites, reviews and comments. An artist has many albums and songs, an album has many songs, favourites and reviews, a user has one profile and many favourites, reviews and comments, and a review has many comments."
+    caption: "Database schema: eight tables and how they relate"
+    label: "Database schema"
+
+tech:
+  - "Laravel"
+  - "PHP"
+  - "Livewire"
+  - "Tailwind CSS"
+  - "Eloquent ORM"
+  - "Spotify Web API"
+  - "Docker"
+  - "MySQL"
+---
+
+- Laravel on an MVC architecture, with Eloquent modelling the relationships between artists, albums, songs, users and reviews.
+- Wrapped the Spotify Web API in a service registered on Laravel's container, so token handling stays out of the controllers. A custom seeder used it to populate 20 artists and 193 releases with real artwork and track listings.
+- Accounts and favourites, a community forum of recent reviews, and admin moderation of comments.
+- Evaluated against WCAG 2 with alt text throughout and colour contrast passing AA and AAA.
+
+## Result
+
+The highest grade I attained during my degree, at 96%. Seeding from a live API is very satisfying until the API refuses to connect to your site, blocking the database from being populated. Next time I would cache the Spotify responses after the first retrieval, so I never have to repopulate from scratch every time I want to launch the site.

@@ -1,0 +1,87 @@
+---
+// The tabbed model-architecture diagram: one tab per model, each with a
+// drawn view and a detail view. It is built by script, because it is a thing
+// to operate, so until the script runs (or if it never does) the same facts
+// are here as plain text.
+import "../styles/diagrams.css";
+import { DIAGRAMS } from "../scripts/diagrams.js";
+
+interface Props {
+  /** Which diagram, by its name in diagrams.js. */
+  name: string;
+}
+const { name } = Astro.props;
+const spec = DIAGRAMS[name];
+---
+
+{
+  spec && (
+    <div class="diagram-host" data-diagram={name}>
+      <dl class="fallback">
+        {spec.tabs.map((tab) => (
+          <div>
+            <dt>
+              <span class="nb">{tab.name}</span>
+            </dt>
+            <dd>{tab.desc}</dd>
+          </div>
+        ))}
+      </dl>
+      <p class="fallback-note">{spec.note}</p>
+    </div>
+  )
+}
+
+<script>
+  // The diagram sits well down the page, so its code is fetched and the
+  // drawing built only as the reader approaches it. Until then, and for
+  // anyone without script, the text above it says the same things.
+  async function build(host: HTMLElement) {
+    const { renderDiagram } = await import("../scripts/diagrams.js");
+    const drawing = renderDiagram(host.dataset.diagram ?? "");
+    if (drawing) host.replaceChildren(drawing);
+  }
+
+  document.querySelectorAll<HTMLElement>("[data-diagram]").forEach((host) => {
+    if (!("IntersectionObserver" in window)) {
+      build(host);
+      return;
+    }
+    const watch = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          watch.disconnect();
+          build(host);
+        }
+      },
+      { rootMargin: "600px 0px" },
+    );
+    watch.observe(host);
+  });
+</script>
+
+<style>
+  .fallback {
+    display: grid;
+    gap: 1rem;
+    max-width: var(--measure);
+    margin: 0;
+  }
+  .fallback dt {
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    color: var(--text);
+  }
+  .fallback dd {
+    margin: 0.2rem 0 0;
+    color: var(--muted);
+  }
+  .fallback-note {
+    max-width: var(--measure);
+    margin: 1rem 0 0;
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    color: var(--muted);
+  }
+</style>

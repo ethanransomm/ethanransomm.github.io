@@ -1,0 +1,663 @@
+/* ==========================================================================
+   DRAWINGS
+
+   Styles for the interactive drawings: the model-architecture diagrams and
+   the two drawn gallery slides. The drawings are built by script (or as SVG
+   text at build time), so their styles are global, not scoped to a
+   component. This sheet is loaded only by the pages that draw something.
+   Carried over from the previous version of the site.
+   ========================================================================== */
+
+/* ---- Model architecture diagrams ----------------------------------------- */
+
+/* The three model colours (.d-ensemble, .d-swin, .d-unetpp) are defined in
+   global.css, because the result bars use them on pages with no drawing. */
+
+.diagram {
+  background: var(--sunken);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.diagram-tabs {
+  display: flex;
+  gap: 0;
+  padding: 0 0.5rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+
+.diagram-tab {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.01em;
+  color: var(--muted);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.85rem 0.9rem;
+  margin-bottom: -1px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+.diagram-tab:hover {
+  color: var(--text);
+}
+.diagram-tab:active {
+  background: var(--border);
+}
+.diagram-tab::before {
+  content: "\25b8";
+  margin-right: 0.45em;
+  opacity: 0;
+}
+.diagram-tab[aria-selected="true"]::before {
+  opacity: 1;
+}
+.diagram-tab[aria-selected="true"] {
+  color: var(--text);
+  border-bottom-color: var(--m);
+}
+.diagram-tab[aria-selected="true"]::before {
+  color: var(--m);
+}
+
+.diagram-panel {
+  padding: 1.25rem 0 0.25rem;
+}
+.diagram-panel:focus-visible {
+  outline-offset: -3px;
+}
+
+/* The drawings have a fixed minimum legible width. Let them scroll on a
+   phone rather than shrinking the labels to nothing. */
+.diagram-scroll {
+  overflow-x: auto;
+  padding: 0 1rem;
+}
+
+/* ---- Drawings ------------------------------------------------------------ */
+/* Every colour comes from the tab's --m, set on the panel, so each model keeps
+   its own hue while the drawing language stays the same. */
+
+.dg-svg svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-width: 640px;
+  font-family: var(--font-mono);
+}
+.dg-svg svg text {
+  fill: var(--muted);
+  font-size: 11px;
+}
+.dg-svg svg .dg-label {
+  fill: var(--sage);
+}
+.dg-svg svg .dg-small {
+  font-size: 10.5px;
+}
+.dg-svg svg .dg-faint {
+  opacity: 0.8;
+}
+.dg-arrow {
+  fill: var(--m);
+}
+
+.dg-node,
+.dg-fold {
+  outline: none;
+}
+.dg-node {
+  cursor: pointer;
+}
+.dg-edge,
+.dg-node,
+.dg-node *,
+.dg-fold,
+.dg-wins,
+.dg-slab {
+  transition:
+    opacity 0.2s ease,
+    stroke-width 0.2s ease,
+    fill-opacity 0.2s ease,
+    transform 0.22s ease;
+}
+.dg-svg .is-dim {
+  opacity: 0.13;
+}
+.dg-svg .is-off {
+  opacity: 0;
+}
+
+/* wired: connections that pulse in the direction data flows */
+.dg-wire {
+  fill: none;
+  stroke: var(--m);
+  stroke-width: 1.4;
+  stroke-dasharray: 5 9;
+  animation: dg-flow 1.5s linear infinite;
+}
+.dg-wire.up {
+  opacity: 0.75;
+}
+.dg-wire.down {
+  stroke: var(--line);
+  stroke-width: 2;
+  stroke-dasharray: 2 6;
+}
+.dg-wire.is-lit {
+  stroke-width: 2.6;
+  opacity: 1;
+  animation-duration: 0.5s;
+  filter: drop-shadow(0 0 5px var(--m));
+}
+.dg-fold.is-sel .dg-wire {
+  stroke-width: 2.4;
+  animation-duration: 0.55s;
+  filter: drop-shadow(0 0 4px var(--m));
+}
+@keyframes dg-flow {
+  to {
+    stroke-dashoffset: -14;
+  }
+}
+
+.dg-svg .hex,
+.dg-hexn {
+  fill: var(--surface);
+  stroke: var(--m);
+  stroke-width: 1.6;
+}
+.dg-node.enc .hex {
+  stroke: var(--line);
+}
+.dg-svg svg text.id,
+.dg-svg svg text.dg-id {
+  fill: var(--text);
+  font-size: 10px;
+  text-anchor: middle;
+  pointer-events: none;
+}
+.dg-node:focus-visible .hex {
+  stroke-width: 3;
+  stroke: var(--accent);
+}
+.dg-node.is-sel .hex {
+  fill: color-mix(in srgb, var(--m) 40%, var(--surface));
+  filter: drop-shadow(0 0 8px var(--m));
+  stroke-width: 2.6;
+}
+.dg-node.is-src .hex {
+  fill: color-mix(in srgb, var(--m) 18%, var(--surface));
+}
+
+/* ensemble */
+.dg-cell {
+  fill: none;
+  stroke: var(--line);
+}
+.dg-cell.held {
+  fill: var(--m);
+  stroke: var(--m);
+}
+.dg-model {
+  fill: var(--surface);
+  stroke: var(--m);
+  stroke-width: 1.2;
+}
+.dg-out {
+  fill: none;
+  stroke: var(--m);
+  stroke-width: 1.6;
+  stroke-dasharray: 5 9;
+  animation: dg-flow 1.5s linear infinite;
+}
+.dg-frame {
+  fill: var(--surface);
+  stroke: var(--line);
+}
+.dg-organ {
+  fill: none;
+  stroke: var(--line);
+}
+.dg-blob-lo {
+  fill: var(--m);
+  opacity: 0.2;
+}
+.dg-blob {
+  fill: var(--m);
+  opacity: 0.85;
+}
+
+/* slabs: footprint shrinks with resolution, thickness grows with channels */
+.dg-slab .top {
+  fill: color-mix(in srgb, var(--m) 26%, var(--surface));
+  stroke: var(--m);
+  stroke-width: 1.2;
+}
+.dg-slab .lft {
+  fill: color-mix(in srgb, var(--m) 12%, var(--sunken));
+  stroke: var(--m);
+}
+.dg-slab .rgt {
+  fill: color-mix(in srgb, var(--m) 19%, var(--sunken));
+  stroke: var(--m);
+}
+.dg-slab.dec .top {
+  fill: color-mix(in srgb, var(--line) 55%, var(--surface));
+  stroke: var(--muted);
+}
+.dg-slab.dec .lft,
+.dg-slab.dec .rgt {
+  fill: color-mix(in srgb, var(--line) 30%, var(--sunken));
+  stroke: var(--line);
+}
+.dg-skip {
+  fill: none;
+  stroke: var(--m);
+  stroke-width: 1.1;
+  stroke-dasharray: 3 4;
+  opacity: 0.5;
+}
+.dg-grid {
+  stroke: var(--m);
+  stroke-width: 0.7;
+  opacity: 0.35;
+}
+.dg-win {
+  fill: none;
+  stroke: var(--m);
+  stroke-width: 2;
+}
+.dg-home {
+  fill: var(--m);
+  fill-opacity: 0.14;
+  stroke: none;
+}
+.dg-mark {
+  fill: var(--text);
+  stroke: var(--m);
+  stroke-width: 1.5;
+  filter: drop-shadow(0 0 6px var(--m));
+}
+.dg-leader {
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 0.8;
+}
+
+/* detail views: printed output */
+.dg-pre {
+  margin: 0;
+  padding-left: 0.25rem;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  line-height: 1.4;
+  white-space: pre;
+  color: var(--muted);
+}
+.dg-prov {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 15rem;
+  gap: 2rem;
+  min-width: 640px;
+}
+.dg-table {
+  min-width: 0;
+  padding: 0.5rem 0 0.25rem;
+}
+.dg-stat {
+  margin: 1rem 0 0;
+  font-size: var(--fs-xs);
+  color: var(--muted);
+}
+.dg-stat b {
+  color: var(--text);
+  font-weight: 500;
+}
+.t-id {
+  color: var(--text);
+}
+.t-enc {
+  color: var(--sage);
+}
+.t-skip {
+  color: var(--m);
+}
+.t-up {
+  color: color-mix(in srgb, var(--m) 60%, var(--text));
+}
+.t-down {
+  color: var(--muted);
+}
+.t-seen {
+  color: var(--line);
+}
+.g-sel {
+  color: var(--text);
+  text-shadow: 0 0 10px var(--m);
+}
+.g-src {
+  color: var(--m);
+}
+.g-anc {
+  color: color-mix(in srgb, var(--m) 55%, var(--muted));
+}
+.g-off {
+  color: var(--line);
+}
+
+.d-controls.d-views {
+  padding: 0.85rem 1.25rem 0;
+}
+.d-holder:empty {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dg-wire,
+  .dg-out {
+    animation: none;
+  }
+  .dg-edge,
+  .dg-node,
+  .dg-node *,
+  .dg-fold,
+  .dg-wins,
+  .dg-slab {
+    transition: none;
+  }
+}
+
+.d-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 1rem 1.25rem 0;
+}
+
+.d-btn::before {
+  content: "[";
+  margin-right: 0.3em;
+  opacity: 0.45;
+}
+.d-btn::after {
+  content: "]";
+  margin-left: 0.3em;
+  opacity: 0.45;
+}
+.d-btn[aria-pressed="true"]::before,
+.d-btn[aria-pressed="true"]::after {
+  opacity: 1;
+}
+
+.d-btn {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.01em;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 0.35rem 0.6rem;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+.d-btn:hover {
+  color: var(--text);
+  border-color: var(--m);
+}
+.d-btn:active {
+  transform: translateY(1px);
+}
+.d-btn[aria-pressed="true"] {
+  color: var(--text);
+  border-color: var(--m);
+  background: color-mix(in srgb, var(--m) 10%, transparent);
+}
+
+/* What the interaction is currently telling you. Fixed height, so the panel
+   does not jump as the text changes. */
+.diagram-readout::before {
+  content: ">";
+  color: var(--m);
+  margin-right: 0.6em;
+}
+
+.diagram-readout {
+  margin: 0.85rem 0 0;
+  padding: 0 1.25rem 0.9rem;
+  min-height: 2.6em;
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.diagram-caption {
+  margin: 0.5rem 0 0;
+  padding: 0 1.25rem 0.75rem;
+  font-size: var(--fs-sm);
+  color: var(--muted);
+}
+
+.diagram-note {
+  margin: 0;
+  padding: 0 1.25rem 1.1rem;
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  opacity: 0.8;
+}
+
+
+/* ---- Gallery slides that are drawn, not photographed --------------------- */
+
+.dg-green {
+  --m: var(--accent);
+}
+
+.screen-stage.is-graph {
+  overflow-x: auto;
+}
+.screen-stage.is-graph .dg-svg svg {
+  min-width: 720px;
+}
+
+.dg-box {
+  fill: var(--surface);
+  stroke: var(--line);
+  stroke-width: 1.3;
+}
+.dg-node.core .dg-box {
+  stroke: var(--m);
+}
+.dg-node.lib .dg-box {
+  stroke: var(--sage);
+}
+.dg-node.store .dg-box {
+  stroke: var(--muted);
+  stroke-dasharray: 4 3;
+}
+.dg-node.is-sel .dg-box {
+  fill: color-mix(in srgb, var(--m) 24%, var(--surface));
+  stroke: var(--m);
+  filter: drop-shadow(0 0 7px var(--m));
+}
+.dg-node.is-src .dg-box {
+  fill: color-mix(in srgb, var(--m) 10%, var(--surface));
+}
+.dg-node:focus-visible .dg-box,
+.dg-node:focus-visible .dg-body {
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+.dg-svg svg text.dg-title {
+  fill: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+}
+.dg-svg svg text.dg-sub {
+  font-size: 9.5px;
+}
+.dg-svg svg text.dg-kick {
+  fill: var(--sage);
+  font-size: 9.5px;
+}
+.dg-group {
+  fill: none;
+  stroke: var(--line);
+  stroke-dasharray: 2 5;
+}
+.dg-edge.is-lit .dg-wire {
+  stroke-width: 2.6;
+  opacity: 1;
+  animation-duration: 0.5s;
+  filter: drop-shadow(0 0 5px var(--m));
+}
+.dg-svg svg text.dg-elabel {
+  fill: var(--text);
+  font-size: 10px;
+  opacity: 0;
+  paint-order: stroke;
+  stroke: var(--sunken);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+  transition: opacity 0.2s ease;
+}
+.dg-edge.is-lit .dg-elabel {
+  opacity: 1;
+}
+
+/* the schema's tables */
+.dg-body {
+  fill: var(--surface);
+  stroke: var(--line);
+  stroke-width: 1.2;
+}
+.dg-head {
+  fill: color-mix(in srgb, var(--m) 22%, var(--surface));
+  stroke: var(--line);
+  stroke-width: 1.2;
+}
+.dg-table.is-sel .dg-head {
+  fill: color-mix(in srgb, var(--m) 45%, var(--surface));
+}
+.dg-table.is-sel .dg-body,
+.dg-table.is-src .dg-body {
+  stroke: var(--m);
+}
+.dg-table.is-sel {
+  filter: drop-shadow(0 0 6px var(--m));
+}
+.dg-svg svg text.dg-field {
+  fill: var(--text);
+  font-size: 11px;
+}
+.dg-svg svg text.dg-key {
+  fill: var(--sage);
+  font-size: 8.5px;
+}
+.dg-line,
+.dg-end {
+  fill: none;
+  stroke: color-mix(in srgb, var(--m) 70%, var(--muted));
+  stroke-width: 1.3;
+}
+.dg-rel.is-lit .dg-line,
+.dg-rel.is-lit .dg-end {
+  stroke: var(--m);
+  stroke-width: 2.2;
+  filter: drop-shadow(0 0 4px var(--m));
+}
+
+/* a thumbnail that is a miniature of the drawing */
+.thumb-graph {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--sunken);
+  pointer-events: none;
+}
+.thumb-graph svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.thumb-graph .dg-wire,
+.thumb-graph .dg-elabel {
+  animation: none;
+}
+
+/* a project's headline feature, between its highlights and its outcome */
+
+@media (prefers-reduced-motion: reduce) {
+  .screen-stage,
+  .dg-svg svg text.dg-elabel {
+    transition: none;
+  }
+}
+
+
+@media (max-width: 680px) {
+  .diagram-caption,
+  .diagram-note {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* The drawings are wider than a phone, so say so rather than leaving the
+     reader to discover the sideways scroll by accident. */
+  .diagram-scroll::after {
+    content: "scroll the diagram sideways →";
+    display: block;
+    position: sticky;
+    left: 0;
+    width: 100%;
+    padding-top: 0.5rem;
+    font-size: var(--fs-xs);
+    color: var(--muted);
+  }
+}
+
+/* ---- Refinements in this version ----------------------------------------- */
+
+/* The tab strip scrolls sideways if it must, but never grows a scrollbar of
+   its own beside or beneath three tabs. */
+.diagram-tabs {
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+.diagram-tabs::-webkit-scrollbar {
+  display: none;
+}
+/* Where a drawing does scroll, its scrollbar is thin and in the page's own
+   colours rather than the browser's default. */
+.diagram-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+
+/* On a phone the buttons under a drawing are a thumb's size, with room
+   between them. */
+@media (max-width: 760px) {
+  .d-btn {
+    min-height: 2.75rem;
+    padding-left: 0.8rem;
+    padding-right: 0.8rem;
+  }
+  .d-controls {
+    gap: 0.5rem;
+  }
+  .diagram-tab {
+    min-height: 2.75rem;
+  }
+}

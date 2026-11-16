@@ -1,0 +1,106 @@
+---
+// Rows of label, bar and figure, all drawn against one scale. The figure is
+// printed beside every bar, so nothing is carried by length or colour alone.
+// A row's `tone` picks one of the model colours; without one, the highest
+// row is lit in the accent.
+interface Row {
+  label: string;
+  value: number;
+  tone?: string;
+}
+interface Props {
+  rows: Row[];
+  /** The value a full-width bar stands for. */
+  max: number;
+  /** What the bars measure. Read out to screen readers, and shown above the
+      bars unless showLabel is false. */
+  label?: string;
+  showLabel?: boolean;
+  /** Text after each figure, such as "%". */
+  unit?: string;
+  /** How wide the column of row labels is. Widen it for long labels. */
+  labelWidth?: string;
+}
+const {
+  rows,
+  max,
+  label,
+  showLabel = true,
+  unit = "",
+  labelWidth = "11rem",
+} = Astro.props;
+const top = Math.max(...rows.map((r) => r.value));
+const width = (v: number) => Math.max(0, Math.min(100, (v / max) * 100));
+---
+
+<div class="results" style={`--label-w:${labelWidth}`}>
+  {label && showLabel && <p class="meta results-label">{label}</p>}
+  <ul class="bars" aria-label={label}>
+    {
+      rows.map((r) => (
+        <li class:list={["bar-row", r.tone, { "is-top": !r.tone && r.value === top }]}>
+          <span class="bar-label">
+            <span class="nb">{r.label}</span>
+          </span>
+          <span class="bar-track" aria-hidden="true">
+            <span class="bar-fill" style={`width:${width(r.value).toFixed(1)}%`} />
+          </span>
+          <span class="bar-value">{`${r.value}${unit}`}</span>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  .results-label {
+    margin: 0 0 0.6rem;
+    color: var(--sage);
+  }
+  .bars {
+    display: grid;
+    gap: 0.5rem;
+    max-width: var(--measure);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .bar-row {
+    display: grid;
+    grid-template-columns: minmax(0, var(--label-w)) minmax(0, 1fr) 3.5rem;
+    gap: 0.2rem 1rem;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+    font-variant-numeric: tabular-nums;
+  }
+  .bar-label {
+    color: var(--muted);
+  }
+  .bar-track {
+    height: 8px;
+    background: var(--border);
+  }
+  .bar-fill {
+    display: block;
+    height: 100%;
+    background: var(--m, var(--sage));
+  }
+  .is-top .bar-fill {
+    background: var(--accent);
+  }
+  .bar-value {
+    text-align: right;
+    color: var(--text);
+  }
+
+  /* on a phone the label sits above its bar */
+  @media (max-width: 520px) {
+    .bar-row {
+      grid-template-columns: minmax(0, 1fr) 3.5rem;
+    }
+    .bar-label {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

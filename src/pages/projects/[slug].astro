@@ -1,0 +1,261 @@
+---
+// One project's page: what it is and how it did, the screenshots, the
+// write-up beside its technologies, then the model diagram where there is
+// one. Everything on it comes from the project's file in
+// src/content/projects/.
+import { getCollection, render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import SectionHead from "../../components/SectionHead.astro";
+import Text from "../../components/Text.astro";
+import ResultBars from "../../components/ResultBars.astro";
+import Gallery from "../../components/Gallery.astro";
+import ModelDiagram from "../../components/ModelDiagram.astro";
+import { isExternal } from "../../data/site";
+
+export async function getStaticPaths() {
+  const projects = await getCollection("projects");
+  return projects.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const p = entry.data;
+const { Content } = await render(entry);
+
+const links = p.links.filter((l) => l.url);
+const others = (await getCollection("projects"))
+  .filter((e) => e.id !== entry.id)
+  .sort((a, b) => a.data.order - b.data.order);
+---
+
+<Base page="projects" title={p.title} description={p.summary}>
+  <article class="project">
+    <header class="project-head">
+      <SectionHead title={p.title} cmd={`cat ${entry.id}/README.md`} />
+      <p class="meta context">{p.context}</p>
+      <p class="lead"><Text text={p.summary} /></p>
+
+      {
+        p.results && (
+          <div class="project-results">
+            <ResultBars
+              rows={p.results.rows}
+              max={p.results.max}
+              label={p.results.label}
+            />
+          </div>
+        )
+      }
+
+      {
+        links.length > 0 && (
+          <div class="actions">
+            {links.map((l, i) => (
+              <a
+                class:list={["btn", { "btn-primary": i === 0 }]}
+                href={l.url}
+                target={isExternal(l.url) ? "_blank" : undefined}
+                rel={isExternal(l.url) ? "noopener noreferrer" : undefined}
+                aria-label={`${l.label} for ${p.title}`}
+              >
+                {l.label}
+              </a>
+            ))}
+          </div>
+        )
+      }
+    </header>
+
+    <Gallery shots={p.shots} title={p.repo} ratio={p.ratio} id={entry.id} />
+
+    <div class="project-body">
+      <div class="write-up">
+        <Content />
+      </div>
+
+      <aside class="project-aside" aria-label="Technologies and notes">
+        <ul class="chips" aria-label="Technologies used">
+          {p.tech.map((t) => <li class="chip">{t}</li>)}
+        </ul>
+        {p.note && <p class="project-note">{p.note}</p>}
+      </aside>
+    </div>
+
+    {
+      p.diagram && (
+        <section class="project-diagram" aria-labelledby="models-title">
+          <h2 id="models-title" class="meta label">
+            Model architectures
+          </h2>
+          <ModelDiagram name={p.diagram} />
+        </section>
+      )
+    }
+
+    <nav class="more" aria-label="Other projects">
+      <a class="more-link" href="/projects/">
+        <span aria-hidden="true">&lt;-</span>
+        <span>all projects</span>
+      </a>
+      {
+        others.map((o) => (
+          <a class="more-link" href={`/projects/${o.id}/`}>
+            <span>{o.data.title}</span>
+            <span aria-hidden="true">-&gt;</span>
+          </a>
+        ))
+      }
+    </nav>
+  </article>
+</Base>
+
+<style>
+  /* What it is, how it did, where the code is: all before the screenshots */
+  .project-head {
+    margin-bottom: 2.5rem;
+  }
+  .project-head :global(.sec-head) {
+    margin-bottom: 1rem;
+  }
+  .context {
+    margin: 0 0 1.25rem;
+    color: var(--sage);
+  }
+  .lead {
+    margin: 0;
+  }
+  .project-results {
+    margin-top: 1.75rem;
+  }
+
+  /* The write-up, with the facts about the project kept beside it rather
+     than under it */
+  .project-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 17rem;
+    gap: 3rem;
+    padding-top: 2.5rem;
+  }
+  .write-up {
+    min-width: 0;
+    max-width: var(--measure);
+  }
+
+  /* The opening list is the body of the write-up: short paragraphs, no
+     bullets. */
+  .write-up > :global(ul:first-child) {
+    display: grid;
+    gap: 1.1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  /* A titled block: a small label, then what it says. */
+  .write-up :global(h2) {
+    margin: 2.25rem 0 0.6rem;
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    color: var(--sage);
+  }
+  .write-up :global(p) {
+    margin: 0 0 1em;
+  }
+  .write-up :global(p:last-child) {
+    margin-bottom: 0;
+  }
+  /* Points under a titled block, marked the way a shell marks its output */
+  .write-up :global(h2 ~ ul) {
+    display: grid;
+    gap: 0.6rem;
+    margin: 1rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .write-up :global(h2 ~ ul li) {
+    position: relative;
+    padding-left: 1.4rem;
+  }
+  .write-up :global(h2 ~ ul li)::before {
+    content: ">";
+    position: absolute;
+    left: 0;
+    font-family: var(--font-mono);
+    color: var(--accent);
+  }
+
+  .project-aside {
+    align-self: start;
+    position: sticky;
+    top: calc(var(--bar-h) + 1.5rem);
+    padding-left: 1.5rem;
+    border-left: 1px solid var(--border);
+  }
+  .project-aside .chips {
+    margin-top: 0;
+  }
+  .project-note {
+    margin: 1.25rem 0 0;
+    padding: 0.75rem 0 0.75rem 1rem;
+    border-left: 2px solid var(--accent);
+    color: var(--muted);
+    font-size: var(--fs-sm);
+    line-height: 1.55;
+  }
+
+  /* The diagram follows the text, full width, so a reader meets the product
+     first and the explanation of the models second. */
+  .project-diagram {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+  .label {
+    margin: 0 0 1rem;
+    color: var(--sage);
+  }
+
+  .more {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+    margin-top: 3.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+  }
+  .more-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 1ch;
+    min-height: 2.75rem;
+    padding-bottom: 0;
+    background-image: none;
+    color: var(--text);
+  }
+  .more-link:hover,
+  .more-link:focus-visible {
+    color: var(--accent);
+  }
+  .more-link:active {
+    transform: translateY(1px);
+  }
+
+  @media (max-width: 860px) {
+    .project-body {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 2rem;
+    }
+    .project-aside {
+      position: static;
+      padding-left: 0;
+      padding-top: 1.5rem;
+      border-left: none;
+      border-top: 1px solid var(--border);
+    }
+  }
+</style>

@@ -1,0 +1,12 @@
+---
+// A run of text in which model names stay in one piece. "U-Net++" and
+// "nnU-Net" carry a hyphen and plus signs that a browser will otherwise
+// break a line on.
+interface Props {
+  text: string;
+}
+const { text } = Astro.props;
+const parts = text.split(/(nnU-Net|U-Net\+\+|U-Net)/g);
+---
+
+{parts.map((part, i) => (i % 2 ? <span class="nb">{part}</span> : part))}

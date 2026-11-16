@@ -1,0 +1,83 @@
+---
+title: "Prostate Cancer Detection Dashboard"
+order: 1
+context: "Final year dissertation, graded First Class"
+summary: "An interactive dashboard for comparing three deep-learning architectures (nnU-Net, SwinUNETR and U-Net++) on clinically significant prostate cancer detection, voxel by voxel, against expert ground truth on the PI-CAI dataset."
+repo: "ethanransomm/prostate-mri-dashboard"
+
+# Buttons. A link with an empty url stays hidden until it has one.
+links:
+  - label: "View source code"
+    url: "https://github.com/ethanransomm/prostate-mri-dashboard"
+  - label: "Open live demo"
+    url: ""
+
+# The screenshot window and its slides, first slide first. A slide is a
+# screenshot (image) or a drawn graph (graph).
+ratio: "2.2 / 1"
+shots:
+  - image: "../../assets/projects/prostate-slice-viewer.webp"
+    alt: "The slice viewer showing four side-by-side MRI panels (T2 with heatmap, ADC, DWI and a lesion zoom), each with the model's red predicted boundary and the green ground-truth outline, above a slice slider."
+    caption: "Slice viewer: T2, ADC and DWI with prediction and ground truth"
+    label: "Slice viewer"
+  - image: "../../assets/projects/prostate-performance.webp"
+    alt: "The dashboard's performance tab for one patient: AUROC 78.11% and average precision 46.17% above a four-quadrant confusion matrix and a filled ROC curve with AUC 0.781."
+    caption: "Performance for one patient: voxel counts at a 0.5 threshold, beside the global ROC curve"
+    label: "Performance"
+  - image: "../../assets/projects/prostate-diagnostics.webp"
+    alt: "The diagnostics tab: a table of AUROC, average precision, case counts and false positives for folds 0 to 4, the ensemble, SwinUNETR and U-Net++, above a grouped bar chart of AUROC and average precision."
+    caption: "Diagnostics: every fold and architecture compared"
+    label: "Diagnostics"
+  - graph: "mri-arch"
+    alt: "Architecture of the dashboard: the sidebar feeds app.py, which renders three tabs. The tabs read scans through data_utils.py, metrics from JSON files and fold results from a CSV, using SciPy, NumPy, Matplotlib, Streamlit and Plotly."
+    caption: "Architecture: how the app, its tabs and the data fit together"
+    label: "Architecture"
+
+# The headline numbers, drawn as bars under the summary.
+results:
+  label: "Average precision on PI-CAI, higher is better"
+  max: 0.5
+  rows:
+    - label: "nnU-Net ensemble"
+      value: 0.462
+      tone: "d-ensemble"
+    - label: "SwinUNETR"
+      value: 0.309
+      tone: "d-swin"
+    - label: "U-Net++"
+      value: 0.266
+      tone: "d-unetpp"
+
+tech:
+  - "Python"
+  - "Streamlit"
+  - "Plotly"
+  - "NumPy"
+  - "Nibabel"
+  - "nnU-Net"
+  - "MONAI"
+  - "PyTest"
+  - "Docker"
+
+note: "Research and educational tool, not a medical device, and not for clinical decision-making."
+
+# The interactive model diagram shown after the write-up.
+diagram: "cspca"
+---
+
+- Adapted <span class="nb">nnU-Net</span>'s preprocessing and data pipeline so SwinUNETR and <span class="nb">U-Net++</span> could be trained from scratch on identical inputs, matching its per-channel z-score normalisation for a like-for-like comparison.
+- Handled 1,500 patients' 3D bi-parametric MRI volumes with Nibabel and NumPy across T2, ADC and DWI.
+- Compared a hybrid Vision Transformer against a deeply supervised nested CNN on how each localises and diagnoses lesions.
+- Built the Streamlit dashboard around a 3D slice viewer, interactive ROC curves and confusion matrices, so clinical stakeholders can explore the results without reading code.
+
+## Slice viewer
+
+The scan explorer shows the T2, ADC and DWI modalities side by side, with the model's probability heatmap, its predicted lesion boundary and the expert ground-truth mask laid over them. A fourth panel zooms in on the predicted lesion.
+
+- A slider steps through the slices, and the ground-truth and prediction layers can each be switched off.
+- An inspector above the images reports the model's maximum confidence for the case and whether the expert label is positive.
+- Erosion, dilation and zoom run through SciPy and NumPy, the heatmap colouring through Matplotlib, and the slice animation through Plotly.
+
+## Result
+
+The <span class="nb">nnU-Net</span> ensemble had the best average precision, 0.462 against 0.309 for SwinUNETR and 0.266 for <span class="nb">U-Net++</span>. <span class="nb">U-Net++</span> raised the most false alarms, 4.86 per case against 3.16 for the ensemble. That is the kind of trade-off a single AUROC hides.

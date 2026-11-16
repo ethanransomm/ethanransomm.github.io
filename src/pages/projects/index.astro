@@ -1,0 +1,222 @@
+---
+// The projects page: `ls ~/projects` and its listing. Each project gets its
+// framing, its summary, its headline numbers and its leading screenshot, and
+// links through to the full write-up.
+import { getCollection } from "astro:content";
+import { Image } from "astro:assets";
+import Base from "../../layouts/Base.astro";
+import SectionHead from "../../components/SectionHead.astro";
+import Text from "../../components/Text.astro";
+import ResultBars from "../../components/ResultBars.astro";
+import { isExternal } from "../../data/site";
+
+const projects = (await getCollection("projects")).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+---
+
+<Base
+  page="projects"
+  description="Two final-year projects: a dashboard comparing three deep-learning models for prostate cancer detection on MRI, and a Laravel music review platform."
+>
+  <section aria-labelledby="projects-title">
+    <SectionHead title="Projects" cmd="ls ~/projects" id="projects-title" />
+
+    <ol class="listing">
+      {
+        projects.map((entry, index) => {
+          const p = entry.data;
+          const cover = p.shots.find((s) => s.image);
+          const source = p.links.find((l) => l.url);
+          const href = `/projects/${entry.id}/`;
+          return (
+            <li class="entry">
+              <div class="entry-text">
+                <p class="meta dir">{entry.id}/</p>
+                <h2>
+                  <a href={href}>{p.title}</a>
+                </h2>
+                <p class="meta context">{p.context}</p>
+                <p class="summary">
+                  <Text text={p.summary} />
+                </p>
+
+                {p.results && (
+                  <div class="entry-results">
+                    <ResultBars
+                      rows={p.results.rows}
+                      max={p.results.max}
+                      label={p.results.label}
+                    />
+                  </div>
+                )}
+
+                <ul class="chips" aria-label="Technologies used">
+                  {p.tech.map((t) => (
+                    <li class="chip">{t}</li>
+                  ))}
+                </ul>
+
+                <div class="actions">
+                  <a class="btn btn-primary" href={href} aria-label={`Read the write-up for ${p.title}`}>
+                    Read the write-up
+                  </a>
+                  {source && (
+                    <a
+                      class="btn"
+                      href={source.url}
+                      target={isExternal(source.url) ? "_blank" : undefined}
+                      rel={isExternal(source.url) ? "noopener noreferrer" : undefined}
+                      aria-label={`${source.label} for ${p.title}`}
+                    >
+                      {source.label}
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              {cover?.image && (
+                <a class="entry-shot" href={href} tabindex="-1" aria-hidden="true">
+                  <span class="shot-chrome">
+                    <span class="shot-title">{p.repo}</span>
+                  </span>
+                  <Image
+                    src={cover.image}
+                    alt=""
+                    widths={[420, 640, 900]}
+                    sizes="(max-width: 860px) calc(100vw - 3rem), 470px"
+                    style={`aspect-ratio:${p.ratio}`}
+                    loading={index === 0 ? "eager" : "lazy"}
+                    fetchpriority={index === 0 ? "high" : "auto"}
+                  />
+                </a>
+              )}
+            </li>
+          );
+        })
+      }
+    </ol>
+  </section>
+</Base>
+
+<style>
+  .listing {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* One project: its text, with its leading screenshot beside it */
+  .entry {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.84fr);
+    gap: 3rem;
+    align-items: start;
+    padding: 3rem 0;
+    border-top: 1px solid var(--border);
+  }
+  .entry:first-child {
+    padding-top: 0;
+    border-top: none;
+  }
+  .entry:last-child {
+    padding-bottom: 0;
+  }
+
+  .dir {
+    margin: 0 0 0.5rem;
+    color: var(--accent);
+  }
+  h2 {
+    margin: 0 0 0.5rem;
+    font-size: clamp(1.3rem, 2.6vw, 1.85rem);
+  }
+  h2 a {
+    color: var(--text);
+  }
+  h2 a:hover,
+  h2 a:focus-visible {
+    color: var(--accent);
+  }
+  .context {
+    margin: 0 0 1rem;
+    color: var(--sage);
+  }
+  .summary {
+    margin: 0;
+  }
+  .entry-results {
+    margin-top: 1.5rem;
+  }
+  .chips {
+    margin-top: 1.5rem;
+  }
+
+  /* The screenshot, in the same window frame the project page uses */
+  .entry-shot {
+    display: block;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    background: var(--sunken);
+    background-image: none;
+    overflow: hidden;
+    transition: border-color 0.2s ease;
+  }
+  .entry-shot:hover {
+    border-color: var(--line);
+  }
+  .shot-chrome {
+    display: flex;
+    align-items: center;
+    height: 1.9rem;
+    padding: 0 0.85rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .shot-chrome::before {
+    content: "";
+    flex: none;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: var(--line);
+    box-shadow:
+      0.8rem 0 0 var(--line),
+      1.6rem 0 0 var(--line);
+  }
+  .shot-title {
+    margin-left: 2.6rem;
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .entry-shot :global(img) {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  @media (max-width: 860px) {
+    .entry {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 2rem;
+    }
+  }
+  @media (max-width: 460px) {
+    .shot-chrome {
+      padding: 0 0.6rem;
+    }
+    .shot-title {
+      margin-left: 2.1rem;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .entry-shot {
+      transition: none;
+    }
+  }
+</style>
