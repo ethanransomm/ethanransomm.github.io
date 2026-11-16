@@ -1,0 +1,197 @@
+---
+// Contact: how to reach me, then what I am working on now.
+import Base from "../layouts/Base.astro";
+import SectionHead from "../components/SectionHead.astro";
+import { site, isExternal } from "../data/site";
+import { now } from "../data/now";
+
+const { contact } = site;
+// The CV button says what it does; the profiles are named by where they go.
+const label = (text: string) => (text === "CV" ? "View CV" : text);
+---
+
+<Base
+  page="contact"
+  description="Contact Ethan Ransom by email, or find his CV, GitHub and LinkedIn. He is applying for graduate software, data analytics and ML engineering roles."
+>
+  <section aria-labelledby="contact-title">
+    <SectionHead title="Get in touch" cmd='mail -s "hello"' id="contact-title" />
+
+    <p class="lead">{contact.blurb}</p>
+
+    <div class="actions">
+      <a class="btn btn-primary" href={`mailto:${contact.email}`}>{contact.emailLabel}</a>
+      {
+        site.links.map((l) => (
+          <a
+            class="btn"
+            href={l.href}
+            target={isExternal(l.href) ? "_blank" : undefined}
+            rel={isExternal(l.href) ? "noopener noreferrer" : undefined}
+          >
+            {label(l.label)}
+          </a>
+        ))
+      }
+    </div>
+
+    <!-- The address itself, for anyone who wants to copy it. The copy button
+         is revealed by the script, since it needs it. -->
+    <p class="address">
+      <span>or write to <a href={`mailto:${contact.email}`}>{contact.email}</a></span>
+      <button type="button" class="copy" data-copy={contact.email} hidden>
+        <span data-copy-label>copy address</span>
+      </button>
+      <span class="sr-only" role="status" data-copy-status></span>
+    </p>
+  </section>
+
+  <section class="band" aria-labelledby="now-title">
+    <SectionHead title="Right now" cmd="jobs" id="now-title" level={2} />
+
+    <div class="now-grid">
+      <div>
+        <h3 class="meta">{now.learningTitle}</h3>
+        <ul class="plain-list">
+          {now.learning.map((item) => <li>{item}</li>)}
+        </ul>
+      </div>
+      <div>
+        <h3 class="meta">{now.project.heading}</h3>
+        <p class="project-title">
+          <strong>{now.project.title}</strong>{" "}
+          <span class="chip status">{now.project.status}</span>
+        </p>
+        <p class="project-text">{now.project.description}</p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  // Copy the address to the clipboard, and say so. A mail link does nothing
+  // for someone with no mail program set up; this always works.
+  document.querySelectorAll<HTMLButtonElement>("[data-copy]").forEach((button) => {
+    if (!navigator.clipboard) return;
+    const label = button.querySelector<HTMLElement>("[data-copy-label]");
+    const status = button.parentElement?.querySelector<HTMLElement>("[data-copy-status]");
+    const rest = label?.textContent ?? "";
+    let timer: number | undefined;
+    button.hidden = false;
+    button.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(button.dataset.copy ?? "");
+        if (label) label.textContent = "copied";
+        if (status) status.textContent = "Email address copied.";
+      } catch {
+        if (label) label.textContent = "could not copy";
+        if (status) status.textContent = "The address could not be copied. Select it and copy it by hand.";
+      }
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        if (label) label.textContent = rest;
+        if (status) status.textContent = "";
+      }, 2500);
+    });
+  });
+</script>
+
+<style>
+  .lead {
+    margin: 0;
+  }
+
+  .address {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1rem;
+    margin: 1.5rem 0 0;
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+    color: var(--muted);
+  }
+  .address a {
+    color: var(--text);
+  }
+  .address a:hover {
+    color: var(--accent);
+  }
+  .copy {
+    min-height: 2.75rem;
+    padding: 0 0.9rem;
+    border: 1px solid color-mix(in srgb, var(--muted) 62%, var(--bg));
+    border-radius: 2px;
+    background: transparent;
+    color: var(--sage);
+    font: inherit;
+    cursor: pointer;
+  }
+  .copy:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .copy:active {
+    transform: translateY(1px);
+  }
+
+  /* ---- Right now ---------------------------------------------------------- */
+
+  .now-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-top: 1px solid var(--border);
+  }
+  .now-grid > div {
+    padding: 2rem 2rem 2rem 0;
+  }
+  .now-grid > div + div {
+    padding-left: 2rem;
+    padding-right: 0;
+    border-left: 1px solid var(--border);
+  }
+  .now-grid h3 {
+    margin: 0 0 1rem;
+    color: var(--sage);
+  }
+
+  .plain-list {
+    display: grid;
+    gap: 0.8rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .project-title {
+    margin: 0 0 0.6rem;
+    font-family: var(--font-mono);
+    font-size: var(--fs-md);
+    line-height: 1.4;
+    letter-spacing: -0.02em;
+  }
+  .status {
+    display: inline-block;
+    margin-left: 0.6rem;
+    color: var(--accent);
+    white-space: nowrap; /* or a long title breaks the pill across two lines */
+    vertical-align: middle;
+  }
+  .project-text {
+    margin: 0;
+  }
+
+  @media (max-width: 680px) {
+    .now-grid {
+      grid-template-columns: 1fr;
+    }
+    .now-grid > div {
+      padding: 1.75rem 0;
+    }
+    .now-grid > div + div {
+      padding-left: 0;
+      border-left: none;
+      border-top: 1px solid var(--border);
+    }
+  }
+</style>

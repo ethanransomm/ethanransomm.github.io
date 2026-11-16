@@ -1,0 +1,133 @@
+---
+// The toolkit: a spec sheet in two tiers. What shipped comes first, each row
+// naming the project that proves it; what was studied follows, said as
+// coursework.
+import { getCollection } from "astro:content";
+import Base from "../layouts/Base.astro";
+import SectionHead from "../components/SectionHead.astro";
+import Icon from "../components/Icon.astro";
+import Text from "../components/Text.astro";
+import { toolkit, shipped, studied } from "../data/toolkit";
+
+// a shipped row links to its project's write-up, by that project's title
+const projects = await getCollection("projects");
+const titleOf = (id: string) => projects.find((p) => p.id === id)?.data.title;
+---
+
+<Base
+  page="toolkit"
+  description="What Ethan Ransom has built with and what he has studied: Python and PHP in shipped projects, and machine learning, Java, C and C++ and Ada in coursework."
+>
+  <section class="band" aria-labelledby="toolkit-title">
+    <SectionHead title="Toolkit" cmd="pacman -Qe" id="toolkit-title" />
+
+    <p class="lead">{toolkit.blurb}</p>
+
+    <div class="tiers">
+      <div class="tier">
+        <h2 class="meta">{toolkit.shippedTitle}</h2>
+        <ul class="spec">
+          {
+            shipped.map((row) => (
+              <li class="spec-row">
+                <Icon name={row.icon} />
+                <h3 class="spec-name">{row.name}</h3>
+                <div class="spec-body">
+                  <p class="spec-proof shipped">
+                    {row.project && titleOf(row.project) && (
+                      <a href={`/projects/${row.project}/`}>{titleOf(row.project)}</a>
+                    )}
+                    {row.project && titleOf(row.project) ? `, ${row.note}` : row.note}
+                  </p>
+                  <ul class="chips" aria-label="Used with">
+                    {row.with.map((item) => (
+                      <li class="chip">{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div class="tier">
+        <h2 class="meta">{toolkit.studiedTitle}</h2>
+        <ul class="spec">
+          {
+            studied.map((row) => (
+              <li class="spec-row">
+                <Icon name={row.icon} />
+                <h3 class="spec-name">{row.name}</h3>
+                <div class="spec-body">
+                  <p class="spec-proof">
+                    <Text text={row.note} />
+                  </p>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .lead {
+    margin: 0;
+  }
+  .tiers {
+    display: grid;
+    gap: 3rem;
+    margin-top: 2.5rem;
+  }
+  .tier h2 {
+    margin: 0 0 0.75rem;
+    color: var(--sage);
+  }
+
+  /* Rows share their hairlines. */
+  .spec {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--line);
+  }
+  .spec-row {
+    display: grid;
+    grid-template-columns: 2.1rem 11rem minmax(0, 1fr);
+    gap: 0 1.1rem;
+    align-items: start;
+    padding: 1.1rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .spec-name {
+    margin: 0;
+    padding-top: 0.3rem;
+  }
+  .spec-proof {
+    max-width: var(--measure);
+    margin: 0;
+    padding-top: 0.2rem;
+    color: var(--muted);
+  }
+  /* what shipped is stated at full strength; coursework sits a step back */
+  .spec-proof.shipped {
+    color: var(--text);
+  }
+  .spec-body .chips {
+    margin-top: 0.7rem;
+  }
+
+  /* on a phone the name sits beside its icon and the rest goes underneath */
+  @media (max-width: 680px) {
+    .spec-row {
+      grid-template-columns: 2.1rem minmax(0, 1fr);
+    }
+    .spec-body {
+      grid-column: 1 / -1;
+      margin-top: 0.4rem;
+    }
+  }
+</style>

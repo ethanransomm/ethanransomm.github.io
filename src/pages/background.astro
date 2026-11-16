@@ -1,0 +1,214 @@
+---
+// Background: education and work as a timeline, newest first. A spine runs
+// down the gutter between the dates and the entries, with a dot per entry.
+import Base from "../layouts/Base.astro";
+import SectionHead from "../components/SectionHead.astro";
+import ResultBars from "../components/ResultBars.astro";
+import { timeline } from "../data/timeline";
+---
+
+<Base
+  page="background"
+  description="Ethan Ransom's education and work: a First Class BSc in Computer Science from Swansea University, with module marks, and a BTEC Extended Diploma in Computing."
+>
+  <section aria-labelledby="background-title">
+    <SectionHead title="Background" cmd="history" id="background-title" />
+
+    <ol class="timeline">
+      {
+        timeline.map((t) =>
+          t.minor ? (
+            <li class="tl-item tl-minor">
+              <p class="meta tl-when">{t.when}</p>
+              <div class="tl-body">
+                <h2>{t.title}</h2>
+                <p class="tl-place">{t.place}</p>
+              </div>
+            </li>
+          ) : (
+            <li class="tl-item">
+              <p class="meta tl-when">{t.when}</p>
+              <div class="tl-body">
+                <h2>{t.title}</h2>
+                <p class="tl-place">{t.place}</p>
+                {t.detail && <p class="tl-detail">{t.detail}</p>}
+                {t.marks && (
+                  <div class="tl-extra">
+                    <ResultBars
+                      rows={t.marks}
+                      max={100}
+                      unit="%"
+                      label="Highest marks"
+                      showLabel={false}
+                      labelWidth="17.5rem"
+                    />
+                  </div>
+                )}
+                {t.tags && (
+                  <ul class="chips tl-extra">
+                    {t.tags.map((tag) => (
+                      <li class="chip">{tag}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </li>
+          ),
+        )
+      }
+    </ol>
+  </section>
+</Base>
+
+<style>
+  .timeline {
+    --dates: 10.5rem; /* the width of the date column */
+    --gutter: 2.5rem; /* between the dates and the entries; the spine runs down its middle */
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .tl-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--dates) minmax(0, 1fr);
+    gap: 0 var(--gutter);
+    padding: 1.75rem 0;
+  }
+
+  /* The spine */
+  .tl-item::before {
+    content: "";
+    position: absolute;
+    left: calc(var(--dates) + var(--gutter) / 2);
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--border);
+  }
+  .tl-item:first-child::before {
+    top: 2.1rem;
+  }
+  .tl-item:last-child::before {
+    bottom: auto;
+    height: 2.1rem;
+  }
+
+  /* The dot. Its halo is painted in the page background, so it masks the
+     line behind it. */
+  .tl-item::after {
+    content: "";
+    position: absolute;
+    left: calc(var(--dates) + var(--gutter) / 2 - 0.3rem);
+    top: 1.8rem;
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow:
+      0 0 0 4px var(--bg),
+      0 0 0 6px color-mix(in srgb, var(--accent) 22%, transparent);
+  }
+
+  .tl-when {
+    margin: 0;
+    padding-top: 0.5rem;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  /* A stub off the spine into each entry, so the line reads as a bus with
+     things tapped off it rather than a decorative rule. */
+  .tl-body::before {
+    content: "";
+    position: absolute;
+    left: calc(var(--dates) + var(--gutter) / 2);
+    top: 2.1rem;
+    width: calc(var(--gutter) / 2);
+    height: 1px;
+    background: var(--border);
+  }
+
+  .tl-body h2 {
+    margin: 0 0 0.2rem;
+    font-size: var(--fs-lg);
+    line-height: 1.3;
+    letter-spacing: -0.025em;
+  }
+  .tl-place {
+    margin: 0 0 0.6rem;
+    color: var(--sage);
+    font-weight: 500;
+  }
+  .tl-detail {
+    max-width: var(--measure);
+    margin: 0;
+    color: var(--muted);
+  }
+  .tl-extra {
+    margin-top: 0.9rem;
+  }
+
+  /* A minor entry is one line: what, where and when, with a smaller dot */
+  .tl-minor {
+    padding: 0.9rem 0;
+  }
+  .tl-minor .tl-when {
+    padding-top: 0.25rem;
+  }
+  .tl-minor .tl-body {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.15rem 0.9rem;
+  }
+  .tl-minor h2 {
+    margin: 0;
+    font-size: var(--fs-base);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .tl-minor .tl-place {
+    margin: 0;
+    color: var(--muted);
+    font-weight: 400;
+  }
+  .tl-minor::after {
+    top: 1.25rem;
+    width: 0.4rem;
+    height: 0.4rem;
+    margin-left: 0.1rem;
+    background: var(--line);
+    box-shadow: 0 0 0 4px var(--bg);
+  }
+  .tl-minor .tl-body::before {
+    top: 1.45rem;
+  }
+  .tl-minor:last-child::before {
+    height: 1.45rem;
+  }
+
+  /* On a phone the dates sit above each entry and the spine moves to the
+     left edge. */
+  @media (max-width: 680px) {
+    .tl-item {
+      grid-template-columns: 1fr;
+      gap: 0.4rem;
+      padding-left: 1.6rem;
+    }
+    .tl-item::before {
+      left: 0.3rem;
+    }
+    .tl-item::after {
+      left: 0;
+    }
+    .tl-body::before {
+      display: none;
+    }
+    .tl-when,
+    .tl-minor .tl-when {
+      padding-top: 0;
+    }
+  }
+</style>
