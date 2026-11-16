@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Ethan Ransom">
+  <!-- The prompt segment from the section headers: a green powerline tab with
+       the E cut out of it, and a second segment trailing behind. Drawn as
+       shapes rather than text so it renders the same everywhere. -->
+  <rect width="64" height="64" rx="10" fill="#0c1214"/>
+  <path d="M7 15h35l13 17-13 17H7z" fill="#4f9d3a"/>
+  <path d="M47 15l12 17-12 17" fill="none" stroke="#86aca6" stroke-width="4" stroke-linejoin="miter"/>
+  <g fill="#0c1214">
+    <rect x="15" y="22" width="7" height="20"/>
+    <rect x="15" y="22" width="19" height="6"/>
+    <rect x="15" y="29" width="14" height="6"/>
+    <rect x="15" y="36" width="19" height="6"/>
+  </g>
+</svg>
