@@ -22,9 +22,6 @@
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css";
 
-/* the old site's files are reference only; do not read class names from them */
-@source not "../../legacy";
-
 @layer theme {
   /* Colours point at the palette's own variables, so a palette change in
      palettes.css reaches the utilities too. Tailwind's default colours are

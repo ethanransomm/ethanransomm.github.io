@@ -5,7 +5,6 @@
    the two drawn gallery slides. The drawings are built by script (or as SVG
    text at build time), so their styles are global, not scoped to a
    component. This sheet is loaded only by the pages that draw something.
-   Carried over from the previous version of the site.
    ========================================================================== */
 
 /* ---- Model architecture diagrams ----------------------------------------- */

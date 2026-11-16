@@ -5,7 +5,6 @@
     "**/*"
   ],
   "exclude": [
-    "dist",
-    "legacy"
+    "dist"
   ]
 }

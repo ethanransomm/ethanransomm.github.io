@@ -2,11 +2,10 @@
 // dissertation page, and the two drawn gallery slides (the dashboard's
 // architecture and the Music Musings database schema).
 //
-// This is the drawing code from the previous version of the site, carried
-// over whole so that nothing in it is lost. It is plain JavaScript, and
-// importing it touches nothing in the page: the two graph specs build their
-// SVG as text, so they can be drawn when the site is built, and everything
-// that needs the browser waits until one of the exported functions is called.
+// It is plain JavaScript, with its types in diagrams.d.ts. Importing it
+// touches nothing in the page: the two graph specs build their SVG as text,
+// so they can be drawn when the site is built, and everything that needs the
+// browser waits until one of the exported functions is called.
 
 /* eslint-disable */
 // @ts-nocheck
