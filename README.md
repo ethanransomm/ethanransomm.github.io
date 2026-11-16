@@ -58,7 +58,7 @@ Other fields: `tagline` and `heroStats` are the sentence and the three figures u
 
 **Palette.** `theme.palette` picks one of seven: `layer` (the one in use), `pine`, `vinyl`, `oxide`, `signal`, `cobalt`, `ember`. Each is a block of tokens in section 1 of `styles.css`. `theme.accent` overrides just the accent. The site is dark only, with no light mode. The three colours inside the model diagrams (violet, azure, rose) are fixed across palettes because they identify the three models.
 
-**Typography.** JetBrains Mono throughout. The stack asks for the locally installed Nerd Font first and falls back to the Google build, so it looks the same for visitors without it.
+**Typography.** JetBrains Mono throughout. The stack asks for the locally installed Nerd Font first and falls back to the Google build, so it looks the same for visitors without it. All running text and labels use one of five sizes, `--fs-xs` to `--fs-lg`, defined with the shared tokens in `styles.css`; use those instead of writing a new size. The display headings scale with the window, and the ASCII artwork and the lettering inside the diagrams keep their own sizes.
 
 **Section headers.** Each renders as a powerline prompt followed by a command naming the section. The chevrons are CSS triangles, not Nerd Font glyphs, so they never show as tofu. The written title stays in the markup as a visually hidden `<h2>` for screen readers. Edit the prompts in `index.html`.
 
