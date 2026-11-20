@@ -34,7 +34,7 @@ const projects = defineCollection({
         .array(
           z.object({
             image: image().optional(),
-            graph: z.enum(["mri-arch", "mm-erd"]).optional(),
+            graph: z.enum(["mri-arch", "mm-erd", "spotify-arch"]).optional(),
             alt: z.string(),
             caption: z.string(),
             label: z.string(),

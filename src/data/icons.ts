@@ -22,6 +22,8 @@ export const icons: Record<string, string> = {
     "<path d=\"M4.2 2.6h15.6l-1.4 16.2L12 21.4l-6.4-2.6L4.2 2.6Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linejoin=\"round\"/><text x=\"12\" y=\"14.9\" text-anchor=\"middle\" font-size=\"8\" font-weight=\"700\">{ }</text>",
   ada:
     "<rect x=\"2.6\" y=\"2.6\" width=\"18.8\" height=\"18.8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\"/><text x=\"12\" y=\"15.2\" text-anchor=\"middle\" font-size=\"7\" font-weight=\"700\">Ada</text>",
+  js:
+    "<rect x=\"2.6\" y=\"2.6\" width=\"18.8\" height=\"18.8\" rx=\"2\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\"/><text x=\"14.6\" y=\"18.2\" text-anchor=\"middle\" font-size=\"8\" font-weight=\"700\">JS</text>",
   docker:
     "<path d=\"M1.5 12.2h15.2c1 0 1.8-.3 2.3-.8-.6-1.2-.5-2.6.5-3.9 1.1.7 1.7 1.7 1.8 2.8.9-.2 1.7 0 2.2.4-.4 1.3-1.5 2-3 2-1.6 4.6-5.2 7.3-10.6 7.3C5.2 20 1.8 17.6 1.5 12.2Z\"/><rect x=\"3\" y=\"8.8\" width=\"2.8\" height=\"2.8\"/><rect x=\"6.4\" y=\"8.8\" width=\"2.8\" height=\"2.8\"/><rect x=\"9.8\" y=\"8.8\" width=\"2.8\" height=\"2.8\"/><rect x=\"13.2\" y=\"8.8\" width=\"2.8\" height=\"2.8\"/><rect x=\"6.4\" y=\"5.4\" width=\"2.8\" height=\"2.8\"/><rect x=\"9.8\" y=\"5.4\" width=\"2.8\" height=\"2.8\"/><rect x=\"13.2\" y=\"5.4\" width=\"2.8\" height=\"2.8\"/><rect x=\"9.8\" y=\"2\" width=\"2.8\" height=\"2.8\"/>",
   svm:

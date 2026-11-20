@@ -1,0 +1,59 @@
+---
+title: "Better Spotify Widget"
+order: 3
+context: "Side project, Android home-screen widget"
+summary: "A 4x2 Android widget built to replace Spotify's own, which I found visually unappealing and lacking cohesion. It shows the last song I played and my five most recent playlists and albums as cover tiles, with a matching clock to sit beside it."
+repo: "ethanransomm/better-spotify-widget"
+
+# Buttons. A link with an empty url stays hidden until it has one.
+links:
+  - label: "View source code"
+    url: "https://github.com/ethanransomm/better-spotify-widget"
+
+# The screenshot window and its slides, first slide first. A slide is a
+# screenshot (image) or a drawn graph (graph).
+ratio: "11 / 6"
+shots:
+  - image: "../../assets/projects/better-spotify-widget.webp"
+    alt: "The widget on a dark navy panel: the cover of Stereophonics' Word Gets Around beside the song title 'Local Boy In The Photograph', the artist and 'Playing from Word Gets Around', over previous, play and next buttons. Below are five cover tiles for recent albums and playlists, the first outlined in red."
+    caption: "The widget: the last song played, above five recent albums and playlists"
+    label: "Widget"
+  - image: "../../assets/projects/better-spotify-clock.webp"
+    alt: "The clock widget reading 19:56 in large cream digits with a glowing red colon, above 'Thursday 19 November', '9° broken clouds' and 'high 10°, low 7°, air moderate'."
+    caption: "The matching clock, its colon tinted from the album art"
+    label: "Clock"
+  - graph: "spotify-arch"
+    alt: "How the widget gets its data: the KWGT widget and clock call a Cloudflare Worker. The Worker keeps the refresh token and covers in Workers KV, swaps the token with Spotify's accounts service, reads recently played and now playing from the Spotify Web API, falls back to Spotify's oEmbed for playlist covers, and asks Open-Meteo for air quality."
+    caption: "Architecture: the widget, the Worker and the services it calls"
+    label: "Architecture"
+
+tech:
+  - "JavaScript"
+  - "Cloudflare Workers"
+  - "Workers KV"
+  - "Spotify Web API"
+  - "Open-Meteo"
+  - "KWGT"
+---
+
+- Built in KWGT to replace Spotify's default Android widget. Tapping a cover tile opens that album or playlist in Spotify without starting it, where the default widget starts playing straight away.
+- The panel colour comes from Material You and the accent colour from the album art, and everything is set in JetBrains Mono Nerd Font. There's no progress bar and no Spotify branding. When nothing's playing, the last song stays on screen, dimmed.
+- KWGT can't safely hold API credentials or handle Spotify's OAuth login, so I put a Cloudflare Worker in the middle. It keeps the refresh token in Workers KV, gets a new access token when the old one expires, and sends back one line of text with its fields separated by semicolons, which is easy to split in KWGT.
+- The widget adds the current song's length and title to the feed URL. The URL changes every time the song does, so KWGT fetches fresh data instead of reusing its cached copy.
+
+## Playlist covers
+
+Playlists Spotify makes itself, like On Repeat, often don't return a cover through the API. The Worker works down a list of sources and caches whatever it finds in memory and in KV for a week.
+
+- A cover I've uploaded through the Worker's covers page
+- The Spotify Web API
+- Spotify's oEmbed thumbnail
+- The album art of the last song I played
+
+## Clock
+
+The clock's colon glows in the colour of the album art of whatever is playing, and underneath it shows the date, weather and air quality. KWGT doesn't provide air quality, so the clock asks the Worker for it once an hour with my location, and the Worker gets it from Open-Meteo, which doesn't need an API key.
+
+## Setting it up
+
+The repository has the steps for deploying your own Worker and importing both widgets into KWGT. It also has a script that builds a fake feed, so the widget can be tried for screenshots without a Spotify login.

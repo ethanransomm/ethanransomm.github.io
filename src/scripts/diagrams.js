@@ -1410,6 +1410,27 @@
       { a: "tab3", b: "metrics", label: "Reads model metrics" },
       { a: "tab3", b: "csv", label: "Reads via load_fold_comparison" },
     ];
+    return flowSpec({
+      W: W,
+      H: H,
+      N: N,
+      E: E,
+      group: { x: 186, y: 62, w: 268, h: 398, label: "Streamlit and Plotly" },
+      aria: "Architecture of the dashboard: the sidebar and app.py feed three tabs, which read data through data_utils.py, the metrics files and a results table",
+      idle: "hover or tab to a component to see what it reads and sends.",
+    });
+  }
+
+  // Boxes joined by labelled arrows, with an optional dotted group behind
+  // some of them. Each node has an id, a centre (x, y), a size, a title and
+  // optionally a kick (small line above) and a sub (small line below). Each
+  // edge runs from `a` to `b`; `fs` and `ts` pin the sides it leaves and
+  // meets (t, r, b, l) where the automatic choice is wrong.
+  function flowSpec(cfg) {
+    var W = cfg.W,
+      H = cfg.H,
+      N = cfg.N,
+      E = cfg.E;
     var byId = {};
     N.forEach(function (n) {
       byId[n.id] = n;
@@ -1513,18 +1534,30 @@
     }
 
     return {
-      idle: "hover or tab to a component to see what it reads and sends.",
+      idle: cfg.idle,
       build: function (uid, aria, interactive) {
-        var s = svgOpen(
-          uid,
-          W,
-          H,
-          aria ||
-            "Architecture of the dashboard: the sidebar and app.py feed three tabs, which read data through data_utils.py, the metrics files and a results table",
-        );
-        s += '<rect class="dg-group" x="186" y="62" width="268" height="398"/>';
-        s +=
-          '<text class="dg-label" x="200" y="82">Streamlit and Plotly</text>';
+        var s = svgOpen(uid, W, H, aria || cfg.aria);
+        var g = cfg.group;
+        if (g) {
+          s +=
+            '<rect class="dg-group" x="' +
+            g.x +
+            '" y="' +
+            g.y +
+            '" width="' +
+            g.w +
+            '" height="' +
+            g.h +
+            '"/>';
+          s +=
+            '<text class="dg-label" x="' +
+            (g.x + 14) +
+            '" y="' +
+            (g.y + 20) +
+            '">' +
+            esc(g.label) +
+            "</text>";
+        }
         var labels = "";
         E.forEach(function (e) {
           var r = route(e);
@@ -1619,6 +1652,110 @@
         );
       },
     };
+  }
+
+  // ----- Spotify widget: the phone, the Worker and what it asks ------------------------------
+  function widgetSpec() {
+    return flowSpec({
+      W: 1100,
+      H: 480,
+      group: { x: 360, y: 60, w: 250, h: 400, label: "Cloudflare" },
+      aria: "How the Spotify widget gets its data: the KWGT widget and clock call a Cloudflare Worker, which keeps its token and covers in Workers KV and asks Spotify and Open-Meteo",
+      idle: "hover or tab to a component to see what it asks for and from where.",
+      N: [
+        {
+          id: "widget",
+          x: 120,
+          y: 170,
+          w: 196,
+          h: 66,
+          title: "Spotify widget",
+          sub: "last song, five cover tiles",
+          kick: "KWGT",
+        },
+        {
+          id: "clock",
+          x: 120,
+          y: 340,
+          w: 196,
+          h: 66,
+          title: "Clock",
+          sub: "time, weather, air quality",
+          kick: "KWGT",
+        },
+        {
+          id: "worker",
+          x: 485,
+          y: 220,
+          w: 196,
+          h: 66,
+          title: "worker.js",
+          sub: "routes, token refresh, covers",
+          kick: "Worker",
+          kind: "core",
+        },
+        {
+          id: "kv",
+          x: 485,
+          y: 400,
+          w: 170,
+          h: 48,
+          title: "Workers KV",
+          kind: "store",
+        },
+        {
+          id: "accounts",
+          x: 900,
+          y: 90,
+          w: 200,
+          h: 48,
+          title: "Spotify accounts",
+          kind: "lib",
+        },
+        {
+          id: "api",
+          x: 900,
+          y: 200,
+          w: 200,
+          h: 48,
+          title: "Spotify Web API",
+          kind: "lib",
+        },
+        {
+          id: "oembed",
+          x: 900,
+          y: 310,
+          w: 200,
+          h: 48,
+          title: "Spotify oEmbed",
+          kind: "lib",
+        },
+        {
+          id: "meteo",
+          x: 900,
+          y: 420,
+          w: 200,
+          h: 48,
+          title: "Open-Meteo",
+          kind: "lib",
+        },
+      ],
+      E: [
+        { a: "widget", b: "worker", label: "/feed, one line split on ;" },
+        { a: "clock", b: "worker", label: "/air hourly, with location" },
+        {
+          a: "worker",
+          b: "kv",
+          label: "Refresh token, covers",
+          fs: "b",
+          ts: "t",
+        },
+        { a: "worker", b: "accounts", label: "Swaps the refresh token" },
+        { a: "worker", b: "api", label: "Recently played, now playing" },
+        { a: "worker", b: "oembed", label: "Fallback playlist cover" },
+        { a: "worker", b: "meteo", label: "Air quality for the location" },
+      ],
+    });
   }
 
   // -------- Database Schema -------------------------------------------------------------------
@@ -1932,7 +2069,11 @@
     };
   }
 
-  var GRAPHS = { "mri-arch": archSpec, "mm-erd": schemaSpec };
+  var GRAPHS = {
+    "mri-arch": archSpec,
+    "mm-erd": schemaSpec,
+    "spotify-arch": widgetSpec,
+  };
 
   // Hover, focus or click a node: what it touches lights up, the rest recede.
   function wireGraph(host, spec, say, idle) {

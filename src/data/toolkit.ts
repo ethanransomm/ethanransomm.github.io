@@ -59,9 +59,23 @@ export const shipped: ShippedRow[] = [
     ]
   },
   {
+    name: "JavaScript",
+    icon: "js",
+    project: "better-spotify-widget",
+    note: "side project",
+    with: [
+      "Cloudflare Workers",
+      "Workers KV",
+      "Spotify Web API",
+      "OAuth",
+      "Open-Meteo",
+      "KWGT"
+    ]
+  },
+  {
     name: "Tooling",
     icon: "docker",
-    note: "Both projects",
+    note: "Both final-year projects",
     with: [
       "Git",
       "Docker",

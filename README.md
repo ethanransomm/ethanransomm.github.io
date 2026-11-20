@@ -2,7 +2,7 @@
 
 Live at https://ethanransomm.github.io/
 
-My portfolio: two final-year projects, my toolkit, my background and how to reach me. It is built with [Astro](https://astro.build), so every page is plain HTML by the time it reaches a browser, and very little script is sent with it.
+My portfolio: two final-year projects and a side project, my toolkit, my background and how to reach me. It is built with [Astro](https://astro.build), so every page is plain HTML by the time it reaches a browser, and very little script is sent with it.
 
 The look is a dark terminal: a tmux-style status bar for navigation, powerline prompt headers for each section, a CRT texture, and a band of ASCII artwork over a row of power lines.
 
@@ -102,7 +102,7 @@ The dashboard's page has one tab per model, each with a diagram view and a detai
 
 The diagram is built as the reader scrolls towards it. Until then, and without script, the same facts are on the page as text.
 
-A gallery slide with `graph: name` is a drawing, not a screenshot. Two exist in `GRAPHS` in `src/scripts/diagrams.js`: `mri-arch` (the dashboard's architecture) and `mm-erd` (the Music Musings schema). They are drawn when the site is built; the script makes them respond to hover, focus and click. To add one, write another `*Spec()` function returning the same shape, register it in `GRAPHS`, and add its name to the list of allowed graphs in `src/content.config.ts`.
+A gallery slide with `graph: name` is a drawing, not a screenshot. Three exist in `GRAPHS` in `src/scripts/diagrams.js`: `mri-arch` (the dashboard's architecture), `mm-erd` (the Music Musings schema) and `spotify-arch` (the Spotify widget's architecture). They are drawn when the site is built; the script makes them respond to hover, focus and click. To add one, write another `*Spec()` function returning the same shape, register it in `GRAPHS`, and add its name to the list of allowed graphs in `src/content.config.ts`. The two architecture drawings share `flowSpec()`, which takes a list of boxes and arrows.
 
 ## Accessibility
 
